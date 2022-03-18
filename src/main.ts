@@ -1,12 +1,9 @@
-import * as dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
-
 import { Client, Intents } from 'discord.js';
+import config from './config';
 
 
 (() => {
   const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
-
 
   client.on('ready', () => {
     console.log(`Logged in as ${client.user?.tag}!`);
@@ -28,5 +25,5 @@ import { Client, Intents } from 'discord.js';
     await message.reply('pong!');
   })
 
-  client.login(process.env['DISCORD_TOKEN']);
+  client.login(config.discordToken);
 })();

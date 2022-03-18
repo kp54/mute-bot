@@ -1,8 +1,6 @@
-import * as dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
-
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
+import config from './config';
 
 
 (() => {
@@ -11,12 +9,12 @@ import { Routes } from 'discord-api-types/v9';
     description: 'Replies with Pong!'
   }];
 
-  const rest = new REST({ version: '9' }).setToken(process.env['DISCORD_TOKEN'] ?? '');
+  const rest = new REST({ version: '9' }).setToken(config.discordToken);
 
   (async () => {
     try {
       await rest.put(
-        Routes.applicationGuildCommands(process.env['CLIENT_ID'] ?? '', process.env['GUILD_ID'] ?? ''),
+        Routes.applicationGuildCommands(config.clientId, config.guildId),
         { body: commands },
       );
     } catch (error) {
