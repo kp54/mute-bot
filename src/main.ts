@@ -1,15 +1,15 @@
 import { Client, Intents } from 'discord.js';
 import config from './config';
 
-
 (() => {
   const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
   client.on('ready', () => {
+    // eslint-disable-next-line no-console
     console.log(`Logged in as ${client.user?.tag}!`);
   });
 
-  client.on('interactionCreate', async interaction => {
+  client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
     if (interaction.commandName === 'ping') {
@@ -17,13 +17,13 @@ import config from './config';
     }
   });
 
-  client.on('messageCreate', async message => {
+  client.on('messageCreate', async (message) => {
     if (message.content !== 'ping') {
       return;
     }
 
     await message.reply('pong!');
-  })
+  });
 
   client.login(config.discordToken);
 })();
