@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": ".",
+		},
+	],
+	"extensions": {
+		"recommendations": [
+			"dbaeumer.vscode-eslint",
+		],
+	},
+	"settings": {
+		"editor.formatOnSave": true,
+		"eslint.format.enable": true,
+		"editor.codeActionsOnSave": {
+			"source.fixAll": true,
+		},
+	},
+}
