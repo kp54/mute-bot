@@ -1,8 +1,8 @@
 import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v9';
+import { APIGuild, Routes } from 'discord-api-types/v9';
 import config from './config';
 
-(() => {
+(async () => {
   const commands = [{
     name: 'ping',
     description: 'Replies with Pong!',
@@ -10,15 +10,30 @@ import config from './config';
 
   const rest = new REST({ version: '9' }).setToken(config.discordToken);
 
-  (async () => {
+  const guilds: APIGuild[] = await (async () => {
     try {
-      await rest.put(
-        Routes.applicationGuildCommands(config.clientId, config.guildId),
-        { body: commands },
-      );
-    } catch (error) {
+      return await rest.get(
+        Routes.userGuilds(),
+      ) as APIGuild[];
+    } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(error);
+      console.error(err);
+      return [];
     }
   })();
+
+  await Promise.all(
+    guilds
+      .map(async (x) => {
+        try {
+          await rest.put(
+            Routes.applicationGuildCommands(config.clientId, x.id),
+            { body: commands },
+          );
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.error(err);
+        }
+      }),
+  );
 })();

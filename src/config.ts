@@ -16,6 +16,5 @@ export default (() => {
   return {
     discordToken: required('DISCORD_TOKEN'),
     clientId: required('CLIENT_ID'),
-    guildId: required('GUILD_ID'),
   };
 })();
