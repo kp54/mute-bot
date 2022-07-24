@@ -1,17 +1,17 @@
-import { Feature, Context } from '../feature';
+import { defineFeature } from '../core/feature';
 
-export default class Ping extends Feature {
-  constructor(ctx: Context) {
-    super(ctx);
-    this.ctx = ctx;
-  }
+export default defineFeature({
+  name: 'ping',
 
-  private ctx: Context;
+  setup(ctx) {
+    ctx.registerCommand('ping', 'Replies with `pong!`');
+  },
 
-  actions = [
-    {
-      description: 'Replies with Pong!',
-      arguments: [],
-    },
-  ];
-}
+  onCommand(_, ctx, command) {
+    if (command.length !== 1 || command[0] !== 'ping') {
+      return;
+    }
+
+    ctx.reply('pong!');
+  },
+});

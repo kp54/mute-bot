@@ -1,17 +1,17 @@
-import { Context, Feature } from '../feature';
+import { defineFeature } from '../core/feature';
 
-export default class Echo extends Feature {
-  constructor(ctx: Context) {
-    super(ctx);
-    this.ctx = ctx;
-  }
+export default defineFeature({
+  name: 'echo',
 
-  private ctx: Context;
+  setup(ctx) {
+    ctx.registerCommand('echo', 'echo back arguments', ['text']);
+  },
 
-  actions = [
-    {
-      description: 'echo back text',
-      arguments: ['text'],
-    },
-  ];
-}
+  onCommand(_, ctx, command) {
+    if (command.length < 2 || command[0] !== 'echo') {
+      return;
+    }
+
+    ctx.reply(command.slice(1).join(' '));
+  },
+});
