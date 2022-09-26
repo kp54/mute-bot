@@ -23,9 +23,9 @@ import config from './config';
         try {
           return [
             guild,
-        await rest.get(
-          Routes.applicationGuildCommands(config.clientId, guild.id),
-        ) as APIApplicationCommand[],
+            await rest.get(
+              Routes.applicationGuildCommands(config.clientId, guild.id),
+            ) as APIApplicationCommand[],
           ];
         } catch (err) {
           // eslint-disable-next-line no-console
@@ -38,7 +38,7 @@ import config from './config';
   await Promise.all(
     guildCommands
       .flatMap(([guild, commands]) => commands
-        .map((y): [APIGuild, APIApplicationCommand] => [guild, y]))
+        .map((command): [APIGuild, APIApplicationCommand] => [guild, command]))
       .map(async ([guild, command]) => {
         try {
           await rest.delete(

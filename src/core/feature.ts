@@ -9,7 +9,7 @@ export type CommandContext = {
 export type FeatureDefinition<T> = {
   name: string;
 
-  setup?: (ctx: SetupContext) => T;
+  setup: (ctx: SetupContext) => T;
 
   onCommand?: (self: T, ctx: CommandContext, command: string[]) => void;
 };
