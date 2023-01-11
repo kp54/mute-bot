@@ -4,14 +4,24 @@ import { createCommandContext } from './core/client';
 import features from './features';
 
 (() => {
-  const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+  const client = new Client({
+    intents: [
+      Intents.FLAGS.GUILDS,
+      Intents.FLAGS.GUILD_MESSAGES,
+      Intents.FLAGS.MESSAGE_CONTENT,
+    ],
+  });
 
   client.on('ready', () => {
     // eslint-disable-next-line no-console
     console.log(`Logged in as ${client.user?.tag}!`);
   });
 
-  client.on('messageCreate', async (message) => {
+  client.on('messageCreate', (message) => {
+    if (message.author.id === client.user?.id) {
+      return;
+    }
+
     if (!message.content.startsWith(config.prefix)) {
       return;
     }
