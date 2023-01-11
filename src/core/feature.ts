@@ -1,20 +1,18 @@
-export type SetupContext = {
-  registerCommand: (name: string, description: string, params?: string[]) => void;
-};
-
 export type CommandContext = {
   reply: (message: string) => void;
+  post: (message: string) => void;
 };
 
-export type FeatureDefinition<T> = {
+export type Feature = {
   name: string;
 
-  setup: (ctx: SetupContext) => T;
-
-  onCommand?: (self: T, ctx: CommandContext, command: string[]) => void;
+  onCommand?: (ctx: CommandContext, command: string[]) => void;
 };
 
-// TODO
-export const defineFeature: <T>(feature: FeatureDefinition<T>) => any = () => undefined;
+// type helper
+export const defineFeature = (feature: Feature): Required<Feature> => ({
+  name: feature.name,
+  onCommand: feature.onCommand ?? (() => undefined),
+});
 
 export default { defineFeature };

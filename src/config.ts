@@ -4,7 +4,6 @@ dotenv.config({ path: '.env.local' });
 
 export type Config = Readonly<{
   discordToken: string;
-  clientId: string;
 }>;
 
 const required = (key: string): string => {
@@ -19,7 +18,6 @@ const required = (key: string): string => {
 
 const config: Config = {
   discordToken: required('DISCORD_TOKEN'),
-  clientId: required('CLIENT_ID'),
 };
 
 export default config;
