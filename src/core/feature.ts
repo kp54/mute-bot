@@ -4,14 +4,13 @@ export type CommandContext = {
 };
 
 export type Feature = {
-  name: string;
-
-  onCommand?: (ctx: CommandContext, command: string[]) => void;
+  matcher: RegExp;
+  onCommand?: (ctx: CommandContext, match: RegExpMatchArray, args: string[]) => void;
 };
 
 // type helper
 export const defineFeature = (feature: Feature): Required<Feature> => ({
-  name: feature.name,
+  matcher: feature.matcher,
   onCommand: feature.onCommand ?? (() => undefined),
 });
 

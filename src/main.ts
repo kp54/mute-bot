@@ -12,9 +12,20 @@ import features from './features';
   });
 
   client.on('messageCreate', async (message) => {
+    if (!message.content.startsWith(config.prefix)) {
+      return;
+    }
+
+    const content = message.content.slice(config.prefix.length).trim();
     const ctx = createCommandContext(message);
+    const [head, ...rest] = content.split(/\s/); // TODO: parse quotes
+
     features.forEach((feat) => {
-      feat.onCommand(ctx, [message.content]);
+      const match = head.match(feat.matcher);
+
+      if (match !== null) {
+        feat.onCommand(ctx, match, rest);
+      }
     });
   });
 

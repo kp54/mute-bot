@@ -4,6 +4,7 @@ dotenv.config({ path: '.env.local' });
 
 export type Config = Readonly<{
   discordToken: string;
+  prefix: string;
 }>;
 
 const required = (key: string): string => {
@@ -16,8 +17,11 @@ const required = (key: string): string => {
   return value;
 };
 
+const optional = (key: string): string | undefined => process.env[key];
+
 const config: Config = {
   discordToken: required('DISCORD_TOKEN'),
+  prefix: optional('COMMAND_PREFIX') ?? '/',
 };
 
 export default config;
