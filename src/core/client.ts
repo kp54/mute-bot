@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { CommandContext } from './feature';
+import { CommandContext } from './feature.js';
 
 export const createCommandContext = (message: Message): CommandContext => {
   const reply = (text: string) => message.reply(text);

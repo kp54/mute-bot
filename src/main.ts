@@ -1,8 +1,8 @@
 import { Client, Intents } from 'discord.js';
-import config from './config';
-import { createCommandContext } from './core/client';
-import echo from './features/echo';
-import ping from './features/ping';
+import config from './config.js';
+import { createCommandContext } from './core/client.js';
+import echo from './features/echo/index.js';
+import ping from './features/ping/index.js';
 
 (() => {
   const client = new Client({
