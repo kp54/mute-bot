@@ -1,127 +1,55 @@
-const PokemonTypes = [
-  'ノーマル',
-  'ほのお',
-  'みず',
-  'でんき',
-  'くさ',
-  'こおり',
-  'かくとう',
-  'どく',
-  'じめん',
-  'ひこう',
-  'エスパー',
-  'むし',
-  'いわ',
-  'ゴースト',
-  'ドラゴン',
-  'あく',
-  'はがね',
-  'フェアリー',
-] as const;
+import {
+  PokemonType, pokemonTypes, typeMatrix, TypeResistance,
+} from './constants.js';
 
-type PokemonType = (typeof PokemonTypes)[number];
+export const combineTypes = (type1: PokemonType, type2: PokemonType): TypeResistance => {
+  const resistance1 = typeMatrix[type1];
+  const resistance2 = typeMatrix[type2];
 
-type TypeResistance = {
-  weakness: PokemonType[];
-  resistance: PokemonType[];
-  immunity: PokemonType[];
-};
+  const combined = (
+    Object.fromEntries(pokemonTypes.map((x) => [x, 1]))
+  ) as { [K in PokemonType]: number };
 
-type TypeMatrix = {
-  [K in PokemonType]: TypeResistance
-};
+  const apply = (key: PokemonType, factor: number) => {
+    combined[key] *= factor;
+  };
 
-export const typeMatrix: TypeMatrix = {
-  ノーマル: {
-    weakness: ['かくとう'],
-    resistance: [],
-    immunity: ['ゴースト'],
-  },
-  ほのお: {
-    weakness: ['みず', 'じめん', 'いわ'],
-    resistance: ['ほのお', 'くさ', 'こおり', 'むし', 'はがね', 'フェアリー'],
-    immunity: [],
-  },
-  みず: {
-    weakness: ['でんき', 'くさ'],
-    resistance: ['ほのお', 'みず', 'こおり', 'はがね'],
-    immunity: [],
-  },
-  でんき: {
-    weakness: ['じめん'],
-    resistance: ['でんき', 'ひこう', 'はがね'],
-    immunity: [],
-  },
-  くさ: {
-    weakness: ['ほのお', 'こおり', 'どく', 'ひこう', 'むし'],
-    resistance: ['みず', 'でんき', 'くさ', 'じめん'],
-    immunity: [],
-  },
-  こおり: {
-    weakness: ['ほのお', 'かくとう', 'いわ', 'はがね'],
-    resistance: ['こおり'],
-    immunity: [],
-  },
-  かくとう: {
-    weakness: ['ひこう', 'エスパー', 'フェアリー'],
-    resistance: ['むし', 'いわ', 'あく'],
-    immunity: [],
-  },
-  どく: {
-    weakness: ['じめん', 'エスパー'],
-    resistance: ['くさ', 'かくとう', 'どく', 'むし', 'フェアリー'],
-    immunity: [],
-  },
-  じめん: {
-    weakness: ['みず', 'くさ', 'こおり'],
-    resistance: ['どく', 'いわ'],
-    immunity: ['でんき'],
-  },
-  ひこう: {
-    weakness: ['でんき', 'こおり', 'いわ'],
-    resistance: ['くさ', 'かくとう', 'むし'],
-    immunity: ['じめん'],
-  },
-  エスパー: {
-    weakness: ['むし', 'ゴースト', 'あく'],
-    resistance: ['かくとう', 'エスパー'],
-    immunity: [],
-  },
-  むし: {
-    weakness: ['ほのお', 'ひこう', 'いわ'],
-    resistance: ['くさ', 'かくとう', 'じめん'],
-    immunity: [],
-  },
-  いわ: {
-    weakness: ['みず', 'くさ', 'かくとう', 'じめん', 'はがね'],
-    resistance: ['ノーマル', 'ほのお', 'どく', 'ひこう'],
-    immunity: [],
-  },
-  ゴースト: {
-    weakness: ['ゴースト', 'あく'],
-    resistance: ['どく', 'むし'],
-    immunity: ['ノーマル', 'かくとう'],
-  },
-  ドラゴン: {
-    weakness: ['こおり', 'ドラゴン', 'フェアリー'],
-    resistance: ['ほのお', 'みず', 'でんき', 'くさ'],
-    immunity: [],
-  },
-  あく: {
-    weakness: ['かくとう', 'むし', 'フェアリー'],
-    resistance: ['ゴースト', 'あく'],
-    immunity: ['エスパー'],
-  },
-  はがね: {
-    weakness: ['ほのお', 'かくとう', 'じめん'],
-    resistance: ['ノーマル', 'くさ', 'こおり', 'ひこう', 'エスパー', 'むし', 'いわ', 'ドラゴン', 'はがね', 'フェアリー'],
-    immunity: ['どく'],
-  },
-  フェアリー: {
-    weakness: ['どく', 'はがね'],
-    resistance: ['かくとう', 'むし', 'あく'],
-    immunity: ['ドラゴン'],
-  },
+  resistance1.weakness.forEach((x) => apply(x, 2));
+  resistance1.resistance.forEach((x) => apply(x, 0.5));
+  resistance1.immunity.forEach((x) => apply(x, 0));
+
+  resistance2.weakness.forEach((x) => apply(x, 2));
+  resistance2.resistance.forEach((x) => apply(x, 0.5));
+  resistance2.immunity.forEach((x) => apply(x, 0));
+
+  const result = {
+    weakness: new Array<PokemonType>(),
+    resistance: new Array<PokemonType>(),
+    immunity: new Array<PokemonType>(),
+  };
+
+  pokemonTypes.forEach((x) => {
+    const rate = combined[x];
+
+    switch (true) {
+      case rate === 0:
+        result.immunity.push(x);
+        break;
+
+      case rate < 1:
+        result.resistance.push(x);
+        break;
+
+      case 1 < rate:
+        result.weakness.push(x);
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  return result;
 };
 
 export default {};
