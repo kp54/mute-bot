@@ -19,4 +19,21 @@ module.exports = {
   settings: {
     'import/resolver': 'typescript',
   },
+  rules: {
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
+    yoda: [
+      'error',
+      'never',
+      {
+        onlyEquality: true,
+      },
+    ],
+  },
 };

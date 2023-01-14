@@ -14,5 +14,7 @@
 		"editor.codeActionsOnSave": {
 			"source.fixAll": true,
 		},
+		"typescript.preferences.importModuleSpecifierEnding": "js",
+		"typescript.preferences.quoteStyle": "single",
 	},
 }
