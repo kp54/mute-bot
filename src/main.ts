@@ -1,7 +1,8 @@
 import { Client, Intents } from 'discord.js';
 import config from './config';
 import { createCommandContext } from './core/client';
-import features from './features';
+import echo from './features/echo';
+import ping from './features/ping';
 
 (() => {
   const client = new Client({
@@ -11,6 +12,11 @@ import features from './features';
       Intents.FLAGS.MESSAGE_CONTENT,
     ],
   });
+
+  const features = [
+    ping,
+    echo,
+  ];
 
   client.on('ready', () => {
     // eslint-disable-next-line no-console
