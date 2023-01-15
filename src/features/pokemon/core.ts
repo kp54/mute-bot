@@ -1,55 +1,78 @@
-import {
-  PokemonType, pokemonTypes, typeMatrix, TypeResistance,
-} from './constants.js';
+import { PokemonType, pokemonTypes, typeResistances } from './constants.js';
 
-export const combineTypes = (type1: PokemonType, type2: PokemonType): TypeResistance => {
-  const resistance1 = typeMatrix[type1];
-  const resistance2 = typeMatrix[type2];
+export const combineResistances = (type1: PokemonType, type2: PokemonType) => {
+  if (type1 === type2) {
+    throw new Error('type1 is equals to type2');
+  }
 
-  const combined = (
-    Object.fromEntries(pokemonTypes.map((x) => [x, 1]))
-  ) as { [K in PokemonType]: number };
+  const id1 = pokemonTypes.indexOf(type1);
+  const id2 = pokemonTypes.indexOf(type2);
 
-  const apply = (key: PokemonType, factor: number) => {
-    combined[key] *= factor;
-  };
+  const resistance1 = typeResistances[id1];
+  const resistance2 = typeResistances[id2];
 
-  resistance1.weakness.forEach((x) => apply(x, 2));
-  resistance1.resistance.forEach((x) => apply(x, 0.5));
-  resistance1.immunity.forEach((x) => apply(x, 0));
+  return pokemonTypes.map((_, i) => resistance1[i] * resistance2[i]);
+};
 
-  resistance2.weakness.forEach((x) => apply(x, 2));
-  resistance2.resistance.forEach((x) => apply(x, 0.5));
-  resistance2.immunity.forEach((x) => apply(x, 0));
+export const prettyFormatResistance = (resistance: readonly number[]) => {
+  const weak: PokemonType[] = [];
+  const immune: PokemonType[] = [];
+  const resist: PokemonType[] = [];
 
-  const result = {
-    weakness: new Array<PokemonType>(),
-    resistance: new Array<PokemonType>(),
-    immunity: new Array<PokemonType>(),
-  };
-
-  pokemonTypes.forEach((x) => {
-    const rate = combined[x];
+  pokemonTypes.forEach((type, i) => {
+    const rate = resistance[i];
 
     switch (true) {
       case rate === 0:
-        result.immunity.push(x);
+        immune.push(type);
         break;
-
+      case rate === 1:
+        break;
       case rate < 1:
-        result.resistance.push(x);
+        resist.push(type);
         break;
-
       case 1 < rate:
-        result.weakness.push(x);
+        weak.push(type);
         break;
-
       default:
-        break;
+        throw new Error();
     }
   });
 
-  return result;
+  const lines = [];
+  if (0 < weak.length) {
+    lines.push(`こうかばつぐん: ${weak.join(' ')}`);
+  }
+  if (0 < resist.length) {
+    lines.push(`いまひとつ: ${resist.join(' ')}`);
+  }
+  if (0 < immune.length) {
+    lines.push(`こうかなし: ${immune.join(' ')}`);
+  }
+
+  lines.push('');
+  return lines.join('\n');
 };
 
-export default {};
+export const randomType = (): [PokemonType, PokemonType | null] => {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const [type1, type2, ..._] = [...pokemonTypes, null].sort((_a, _b) => Math.random() - 0.5);
+
+  if (type1 === null) {
+    return [type2!, null];
+  }
+  if (type2 === null) {
+    return [type1!, null];
+  }
+
+  if (pokemonTypes.indexOf(type1) > pokemonTypes.indexOf(type2)) {
+    return [type2, type1];
+  }
+  return [type1, type2];
+};
+
+export default {
+  combineResistances,
+  prettyFormatResistance,
+  randomType,
+};

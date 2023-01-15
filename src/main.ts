@@ -3,6 +3,7 @@ import config from './config.js';
 import { createCommandContext } from './core/client.js';
 import echo from './features/echo/index.js';
 import ping from './features/ping/index.js';
+import pokemon from './features/pokemon/index.js';
 
 (() => {
   const client = new Client({
@@ -16,6 +17,7 @@ import ping from './features/ping/index.js';
   const features = [
     ping,
     echo,
+    pokemon,
   ];
 
   client.on('ready', () => {
