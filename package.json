@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint --fix src/**"
+    "lint": "eslint --fix src/**",
+    "start": "node dist/main.js"
   },
   "keywords": [],
   "author": "",

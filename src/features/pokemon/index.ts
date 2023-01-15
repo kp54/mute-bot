@@ -21,7 +21,7 @@ export default defineFeature({
     const resistance = combineResistances(type1, type2);
     const lines = [
       prettyFormatResistance(resistance),
-      `正解: || ${type1} ${type2} ||`,
+      `正解: || ${type1}/${type2} ||`,
     ];
     ctx.reply(lines.join(''));
   },
