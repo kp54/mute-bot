@@ -6,6 +6,8 @@ module.exports = {
   extends: [
     'airbnb-base',
     'airbnb-typescript/base',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -20,6 +22,15 @@ module.exports = {
     'import/resolver': 'typescript',
   },
   rules: {
+    '@typescript-eslint/naming-convention' : [
+      'warn',
+      {
+        selector: 'variable',
+        modifiers: ['unused'],
+        format: ['camelCase'],
+        leadingUnderscore: 'require',
+      }
+    ],
     '@typescript-eslint/no-unused-vars': [
       'error',
       {

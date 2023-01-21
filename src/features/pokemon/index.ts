@@ -1,6 +1,10 @@
 import { defineFeature } from '../../core/feature.js';
 import { pokemonTypes, typeResistances } from './constants.js';
-import { combineResistances, prettyFormatResistance, randomType } from './core.js';
+import {
+  combineResistances,
+  prettyFormatResistance,
+  randomType,
+} from './core.js';
 
 export default defineFeature({
   matcher: /pt/,

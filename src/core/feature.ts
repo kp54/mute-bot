@@ -5,7 +5,11 @@ export type CommandContext = {
 
 export type Feature = {
   matcher: RegExp;
-  onCommand: (ctx: CommandContext, match: RegExpMatchArray, args: string[]) => void;
+  onCommand: (
+    ctx: CommandContext,
+    match: RegExpMatchArray,
+    args: string[]
+  ) => void;
 };
 
 type FeatureParams = Partial<Feature> & Pick<Feature, 'matcher'>;

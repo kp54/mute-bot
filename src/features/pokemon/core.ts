@@ -55,13 +55,16 @@ export const prettyFormatResistance = (resistance: readonly number[]) => {
 };
 
 export const randomType = (): [PokemonType, PokemonType | null] => {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  const [type1, type2, ..._] = [...pokemonTypes, null].sort((_a, _b) => Math.random() - 0.5);
+  const [type1, type2, ..._] = [...pokemonTypes, null].sort(
+    (_a, _b) => Math.random() - 0.5
+  );
 
   if (type1 === null) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return [type2!, null];
   }
   if (type2 === null) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return [type1!, null];
   }
 
