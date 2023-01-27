@@ -1,26 +1,12 @@
-import { CommandContext } from './types.js';
-
-type FeatureOptions = {
-  prefix: string;
-};
-
-type Feature = {
-  matcher: RegExp;
-  onCommand: (
-    ctx: CommandContext,
-    match: RegExpMatchArray,
-    args: string[]
-  ) => void;
-};
+import { Feature, FeatureFactory, FeatureOptions } from './types.js';
 
 type FeatureDefinition = {
   matcher: (options: FeatureOptions) => RegExp;
   onCommand?: Feature['onCommand'];
 };
 
-// type helper
 export const defineFeature =
-  (definition: () => FeatureDefinition) =>
+  (definition: () => FeatureDefinition): FeatureFactory =>
   (options: FeatureOptions): Feature => {
     const instance = definition();
     const matcher = instance.matcher(options);
@@ -31,4 +17,6 @@ export const defineFeature =
     };
   };
 
-export default { defineFeature };
+export default {
+  defineFeature,
+};
