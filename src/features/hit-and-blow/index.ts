@@ -54,6 +54,7 @@ const handleAttempt = (ctx: CommandContext, game: Game, attempt: string) => {
 
   if (!validate(attempt)) {
     ctx.post(mention(authorId, 'エラー'));
+    return;
   }
 
   // eslint-disable-next-line no-param-reassign
