@@ -1,14 +1,7 @@
+import { CommandContext } from './types.js';
+
 type FeatureOptions = {
   prefix: string;
-};
-
-export type CommandContext = {
-  author: {
-    id: string;
-    username: string;
-  };
-  reply: (message: string) => void;
-  post: (message: string) => void;
 };
 
 type Feature = {
@@ -20,7 +13,7 @@ type Feature = {
   ) => void;
 };
 
-export type FeatureDefinition = {
+type FeatureDefinition = {
   matcher: (options: FeatureOptions) => RegExp;
   onCommand?: Feature['onCommand'];
 };

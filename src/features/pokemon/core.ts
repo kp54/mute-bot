@@ -1,4 +1,5 @@
-import { PokemonType, pokemonTypes, typeResistances } from './constants.js';
+import { pokemonTypes, typeResistances } from './constants.js';
+import { PokemonType } from './types.js';
 
 export const combineResistances = (type1: PokemonType, type2: PokemonType) => {
   if (type1 === type2) {

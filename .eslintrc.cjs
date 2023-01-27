@@ -15,21 +15,19 @@ module.exports = {
     sourceType: 'module',
     project: './tsconfig.eslint.json',
   },
-  plugins: [
-    '@typescript-eslint',
-  ],
+  plugins: ['@typescript-eslint'],
   settings: {
     'import/resolver': 'typescript',
   },
   rules: {
-    '@typescript-eslint/naming-convention' : [
+    '@typescript-eslint/naming-convention': [
       'warn',
       {
         selector: 'variable',
         modifiers: ['unused'],
         format: ['camelCase'],
         leadingUnderscore: 'require',
-      }
+      },
     ],
     '@typescript-eslint/no-unused-vars': [
       'error',
@@ -44,6 +42,15 @@ module.exports = {
       'never',
       {
         onlyEquality: true,
+      },
+    ],
+    'import/order': [
+      'warn',
+      {
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
       },
     ],
   },

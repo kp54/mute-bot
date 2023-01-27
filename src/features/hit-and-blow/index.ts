@@ -1,4 +1,5 @@
-import { CommandContext, defineFeature } from '../../core/feature.js';
+import { defineFeature } from '../../core/feature.js';
+import { CommandContext } from '../../core/types.js';
 
 const DIGITS = 4;
 

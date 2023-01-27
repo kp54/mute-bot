@@ -19,8 +19,6 @@ export const pokemonTypes = [
   'フェアリー',
 ] as const;
 
-export type PokemonType = (typeof pokemonTypes)[number];
-
 export const typeResistances = [
   [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
   [1, 0.5, 2, 1, 0.5, 0.5, 1, 1, 2, 1, 1, 0.5, 2, 1, 1, 1, 0.5, 0.5],
@@ -41,8 +39,3 @@ export const typeResistances = [
   [0.5, 2, 1, 1, 0.5, 0.5, 2, 0, 2, 0.5, 0.5, 0.5, 0.5, 1, 0.5, 1, 0.5, 0.5],
   [1, 1, 1, 1, 1, 1, 0.5, 2, 1, 1, 1, 0.5, 1, 1, 0, 0.5, 2, 1],
 ] as const;
-
-export default {
-  pokemonTypes,
-  typeResistances,
-};

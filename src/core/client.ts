@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import { CommandContext } from './feature.js';
+import { CommandContext } from './types.js';
 
 export const createCommandContext = (message: Message): CommandContext => {
   const author = {

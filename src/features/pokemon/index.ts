@@ -1,4 +1,5 @@
-import { CommandContext, defineFeature } from '../../core/feature.js';
+import { defineFeature } from '../../core/feature.js';
+import { CommandContext } from '../../core/types.js';
 import { pokemonTypes, typeResistances } from './constants.js';
 import {
   combineResistances,
