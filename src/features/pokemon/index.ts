@@ -6,7 +6,7 @@ import {
   randomType,
 } from './core.js';
 
-export default defineFeature({
+export default defineFeature(() => ({
   matcher: /pt/,
   onCommand: (ctx, _match, _args) => {
     const [type1, type2] = randomType();
@@ -29,4 +29,4 @@ export default defineFeature({
     ];
     ctx.reply(lines.join(''));
   },
-});
+}));

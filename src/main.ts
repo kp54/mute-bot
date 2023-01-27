@@ -14,7 +14,7 @@ import pokemon from './features/pokemon/index.js';
     ],
   });
 
-  const features = [ping, echo, pokemon];
+  const features = [ping(), echo(), pokemon()];
 
   client.on('ready', () => {
     // eslint-disable-next-line no-console

@@ -15,9 +15,13 @@ export type Feature = {
 type FeatureParams = Partial<Feature> & Pick<Feature, 'matcher'>;
 
 // type helper
-export const defineFeature = (feature: FeatureParams): Feature => ({
-  matcher: feature.matcher,
-  onCommand: feature.onCommand ?? (() => undefined),
-});
+export const defineFeature =
+  (definition: () => FeatureParams) => (): Feature => {
+    const feature = definition();
+    return {
+      matcher: feature.matcher,
+      onCommand: feature.onCommand ?? (() => undefined),
+    };
+  };
 
 export default { defineFeature };
