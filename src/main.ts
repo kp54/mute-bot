@@ -2,6 +2,7 @@ import { Client, Intents } from 'discord.js';
 import config from './config.js';
 import { createCommandContext } from './core/client.js';
 import echo from './features/echo/index.js';
+import hitAndBlow from './features/hit-and-blow/index.js';
 import ping from './features/ping/index.js';
 import pokemon from './features/pokemon/index.js';
 
@@ -14,7 +15,7 @@ import pokemon from './features/pokemon/index.js';
     ],
   });
 
-  const features = [ping(), echo(), pokemon()];
+  const features = [ping(), echo(), pokemon(), hitAndBlow()];
 
   client.on('ready', () => {
     // eslint-disable-next-line no-console
