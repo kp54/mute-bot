@@ -13,8 +13,13 @@ const createCommandContext = (message: Message): CommandContext => {
     username: message.author.username,
   };
 
-  const reply = (text: string) => message.reply(text);
-  const post = (text: string) => message.channel.send(text);
+  const reply = async (text: string) => {
+    await message.reply(text);
+  };
+
+  const post = async (text: string) => {
+    await message.channel.send(text);
+  };
 
   return {
     author,
@@ -54,12 +59,14 @@ export const createClient = (options: CreateClientOptions) => {
       const match = head.match(feat.matcher);
 
       if (match !== null) {
-        feat.onCommand(ctx, match, rest);
+        void feat.onCommand(ctx, match, rest);
       }
     });
   });
 
-  const run = () => client.login(options.discordToken);
+  const run = async () => {
+    await client.login(options.discordToken);
+  };
 
   return {
     run,

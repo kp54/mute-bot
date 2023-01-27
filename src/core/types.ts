@@ -3,8 +3,8 @@ export type CommandContext = {
     id: string;
     username: string;
   };
-  reply: (message: string) => void;
-  post: (message: string) => void;
+  reply: (message: string) => Promise<void>;
+  post: (message: string) => Promise<void>;
 };
 
 export type Feature = {
@@ -13,7 +13,7 @@ export type Feature = {
     ctx: CommandContext,
     match: RegExpMatchArray,
     args: string[]
-  ) => void;
+  ) => Promise<void>;
 };
 
 export type FeatureOptions = {

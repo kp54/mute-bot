@@ -5,6 +5,8 @@ type FeatureDefinition = {
   onCommand?: Feature['onCommand'];
 };
 
+const noop = () => Promise.resolve();
+
 export const defineFeature =
   (definition: () => FeatureDefinition): FeatureFactory =>
   (options: FeatureOptions): Feature => {
@@ -13,7 +15,7 @@ export const defineFeature =
 
     return {
       matcher,
-      onCommand: instance.onCommand ?? (() => undefined),
+      onCommand: instance.onCommand ?? noop,
     };
   };
 

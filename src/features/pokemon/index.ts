@@ -7,7 +7,7 @@ import {
   randomType,
 } from './core.js';
 
-const post = (
+const post = async (
   ctx: CommandContext,
   resistance: readonly number[],
   answer: readonly string[]
@@ -20,22 +20,22 @@ const post = (
     '',
     `正解: || ${answer.join('/')} ||`,
   ];
-  ctx.reply(lines.join('\n'));
+  await ctx.reply(lines.join('\n'));
 };
 
 export default defineFeature(() => ({
   matcher: ({ prefix }) => new RegExp(`^${prefix}pt$`),
-  onCommand: (ctx, _match, _args) => {
+  onCommand: async (ctx, _match, _args) => {
     const [type1, type2] = randomType();
 
     if (type2 === null) {
       const id = pokemonTypes.indexOf(type1);
       const resistance = typeResistances[id];
-      post(ctx, resistance, [type1]);
+      await post(ctx, resistance, [type1]);
       return;
     }
 
     const resistance = combineResistances(type1, type2);
-    post(ctx, resistance, [type1, type2]);
+    await post(ctx, resistance, [type1, type2]);
   },
 }));

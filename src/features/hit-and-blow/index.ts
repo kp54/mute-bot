@@ -31,17 +31,17 @@ const validate = (attempt: string) => {
   return true;
 };
 
-const handleInit = (ctx: CommandContext, games: Games) => {
+const handleInit = async (ctx: CommandContext, games: Games) => {
   const authorId = ctx.author.id;
 
   if (games.has(authorId)) {
     games.delete(authorId);
-    ctx.post(mention(authorId, 'ゲームを破棄しました'));
+    await ctx.post(mention(authorId, 'ゲームを破棄しました'));
     return;
   }
 
   games.set(authorId, newGame());
-  ctx.post(
+  await ctx.post(
     [
       '** hit and blow **',
       mention(authorId, '4桁の10進数を入力してください'),
@@ -49,11 +49,15 @@ const handleInit = (ctx: CommandContext, games: Games) => {
   );
 };
 
-const handleAttempt = (ctx: CommandContext, game: Game, attempt: string) => {
+const handleAttempt = async (
+  ctx: CommandContext,
+  game: Game,
+  attempt: string
+) => {
   const authorId = ctx.author.id;
 
   if (!validate(attempt)) {
-    ctx.post(mention(authorId, 'エラー'));
+    await ctx.post(mention(authorId, 'エラー'));
     return;
   }
 
@@ -74,13 +78,13 @@ const handleAttempt = (ctx: CommandContext, game: Game, attempt: string) => {
   }
 
   if (result.hit === DIGITS) {
-    ctx.post(
+    await ctx.post(
       [mention(authorId, '正解'), `試行回数: ${game.attempts}`].join('\n')
     );
     return;
   }
 
-  ctx.post(mention(authorId, `Hit: ${result.hit}, Blow: ${result.blow}`));
+  await ctx.post(mention(authorId, `Hit: ${result.hit}, Blow: ${result.blow}`));
 };
 
 export default defineFeature(() => {
@@ -89,9 +93,9 @@ export default defineFeature(() => {
   return {
     matcher: ({ prefix }) =>
       new RegExp(`^(?<init>${prefix}hb)|(?<attempt>[0-9]{${DIGITS}})$`),
-    onCommand: (ctx, match) => {
+    onCommand: async (ctx, match) => {
       if (match.groups?.init !== undefined) {
-        handleInit(ctx, games);
+        await handleInit(ctx, games);
         return;
       }
 
@@ -105,7 +109,7 @@ export default defineFeature(() => {
         throw new Error('something went wrong.');
       }
 
-      handleAttempt(ctx, game, attempt);
+      await handleAttempt(ctx, game, attempt);
     },
   };
 });
