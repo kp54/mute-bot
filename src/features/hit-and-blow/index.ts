@@ -10,6 +10,20 @@ type Game = {
 
 type Games = Map<string, Game>;
 
+const genName = () => {
+  const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  const code = Array(4)
+    .fill(0)
+    .map(() => {
+      const index = Math.trunc(Math.random() * alphabets.length);
+      return alphabets[index];
+    })
+    .join('');
+
+  return `Hit and Blow : ${code}`;
+};
+
 const newGame = (): Game => ({
   attempts: 0,
   answer: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
@@ -88,7 +102,7 @@ export default defineFeature(() => {
     matcher: ({ prefix }) =>
       new RegExp(`^(?<init>${prefix}hb)|(?<attempt>[0-9]{${DIGITS}})$`),
     onCommand: async (ctx, match) => {
-      const threadCtx = await ctx.threadify('hit-and-blow');
+      const threadCtx = await ctx.threadify(genName());
 
       if (match.groups?.init !== undefined) {
         await handleInit(threadCtx, games);
