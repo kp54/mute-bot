@@ -23,7 +23,7 @@ const post = (
 };
 
 export default defineFeature(() => ({
-  matcher: /^pt$/,
+  matcher: ({ prefix }) => new RegExp(`^${prefix}pt$`),
   onCommand: (ctx, _match, _args) => {
     const [type1, type2] = randomType();
 

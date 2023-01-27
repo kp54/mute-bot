@@ -1,7 +1,6 @@
 import { CommandContext, defineFeature } from '../../core/feature.js';
 
 const DIGITS = 4;
-const matcher = new RegExp(`^(?<init>hb)|(?<attempt>[0-9]{${DIGITS}})$`);
 
 type Game = {
   attempts: number;
@@ -87,7 +86,8 @@ export default defineFeature(() => {
   const games = new Map<string, Game>();
 
   return {
-    matcher,
+    matcher: ({ prefix }) =>
+      new RegExp(`^(?<init>${prefix}hb)|(?<attempt>[0-9]{${DIGITS}})$`),
     onCommand: (ctx, match) => {
       if (match.groups?.init !== undefined) {
         handleInit(ctx, games);

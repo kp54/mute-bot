@@ -1,3 +1,7 @@
+type FeatureOptions = {
+  prefix: string;
+};
+
 export type CommandContext = {
   author: {
     id: string;
@@ -7,7 +11,7 @@ export type CommandContext = {
   post: (message: string) => void;
 };
 
-export type Feature = {
+type Feature = {
   matcher: RegExp;
   onCommand: (
     ctx: CommandContext,
@@ -16,15 +20,21 @@ export type Feature = {
   ) => void;
 };
 
-type FeatureParams = Partial<Feature> & Pick<Feature, 'matcher'>;
+export type FeatureDefinition = {
+  matcher: (options: FeatureOptions) => RegExp;
+  onCommand?: Feature['onCommand'];
+};
 
 // type helper
 export const defineFeature =
-  (definition: () => FeatureParams) => (): Feature => {
-    const feature = definition();
+  (definition: () => FeatureDefinition) =>
+  (options: FeatureOptions): Feature => {
+    const instance = definition();
+    const matcher = instance.matcher(options);
+
     return {
-      matcher: feature.matcher,
-      onCommand: feature.onCommand ?? (() => undefined),
+      matcher,
+      onCommand: instance.onCommand ?? (() => undefined),
     };
   };
 

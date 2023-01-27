@@ -15,7 +15,9 @@ import pokemon from './features/pokemon/index.js';
     ],
   });
 
-  const features = [ping(), echo(), pokemon(), hitAndBlow()];
+  const features = [ping, echo, pokemon, hitAndBlow].map((feat) =>
+    feat({ prefix: config.prefix })
+  );
 
   client.on('ready', () => {
     // eslint-disable-next-line no-console
@@ -27,13 +29,9 @@ import pokemon from './features/pokemon/index.js';
       return;
     }
 
-    if (!message.content.startsWith(config.prefix)) {
-      return;
-    }
-
-    const content = message.content.slice(config.prefix.length).trim();
+    const content = message.content.trim();
     const ctx = createCommandContext(message);
-    const [head, ...rest] = content.split(/\s/); // TODO: parse quotes
+    const [head, ...rest] = content.split(/\s+/); // TODO: parse quotes
 
     features.forEach((feat) => {
       const match = head.match(feat.matcher);
