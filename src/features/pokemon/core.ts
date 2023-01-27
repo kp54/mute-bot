@@ -50,7 +50,6 @@ export const prettyFormatResistance = (resistance: readonly number[]) => {
     lines.push(`こうかなし: ${immune.join(' ')}`);
   }
 
-  lines.push('');
   return lines.join('\n');
 };
 
