@@ -17,8 +17,6 @@ const newGame = (): Game => ({
     .slice(0, DIGITS),
 });
 
-const mention = (id: string, message: string) => `<@!${id}> ${message}`;
-
 const validate = (attempt: string) => {
   const used = new Set<string>();
   // eslint-disable-next-line no-restricted-syntax
@@ -32,36 +30,33 @@ const validate = (attempt: string) => {
 };
 
 const handleInit = async (ctx: CommandContext, games: Games) => {
-  const authorId = ctx.author.id;
-
-  if (games.has(authorId)) {
-    games.delete(authorId);
-    await ctx.post(mention(authorId, 'ゲームを破棄しました'));
+  if (games.has(ctx.channelId)) {
+    games.delete(ctx.channelId);
+    await ctx.post('ゲームを破棄しました');
     return;
   }
 
-  games.set(authorId, newGame());
+  games.set(ctx.channelId, newGame());
   await ctx.post(
-    [
-      '** hit and blow **',
-      mention(authorId, '4桁の10進数を入力してください'),
-    ].join('\n')
+    ['** hit and blow **', '4桁の10進数を入力してください'].join('\n')
   );
 };
 
 const handleAttempt = async (
   ctx: CommandContext,
-  game: Game,
+  games: Games,
   attempt: string
 ) => {
-  const authorId = ctx.author.id;
-
-  if (!validate(attempt)) {
-    await ctx.post(mention(authorId, 'エラー'));
+  const game = games.get(ctx.channelId);
+  if (game === undefined) {
     return;
   }
 
-  // eslint-disable-next-line no-param-reassign
+  if (!validate(attempt)) {
+    await ctx.post('エラー');
+    return;
+  }
+
   game.attempts += 1;
 
   const symbols = new Set(game.answer);
@@ -78,13 +73,12 @@ const handleAttempt = async (
   }
 
   if (result.hit === DIGITS) {
-    await ctx.post(
-      [mention(authorId, '正解'), `試行回数: ${game.attempts}`].join('\n')
-    );
+    await ctx.post(['正解', `試行回数: ${game.attempts}`].join('\n'));
+    games.delete(ctx.channelId);
     return;
   }
 
-  await ctx.post(mention(authorId, `Hit: ${result.hit}, Blow: ${result.blow}`));
+  await ctx.post(`Hit: ${result.hit}, Blow: ${result.blow}`);
 };
 
 export default defineFeature(() => {
@@ -94,22 +88,17 @@ export default defineFeature(() => {
     matcher: ({ prefix }) =>
       new RegExp(`^(?<init>${prefix}hb)|(?<attempt>[0-9]{${DIGITS}})$`),
     onCommand: async (ctx, match) => {
-      if (match.groups?.init !== undefined) {
-        await handleInit(ctx, games);
-        return;
-      }
+      const threadCtx = await ctx.threadify('hit-and-blow');
 
-      const game = games.get(ctx.author.id);
-      if (game === undefined) {
+      if (match.groups?.init !== undefined) {
+        await handleInit(threadCtx, games);
         return;
       }
 
       const attempt = match.groups?.attempt;
-      if (attempt === undefined) {
-        throw new Error('something went wrong.');
+      if (attempt !== undefined) {
+        await handleAttempt(threadCtx, games, attempt);
       }
-
-      await handleAttempt(ctx, game, attempt);
     },
   };
 });

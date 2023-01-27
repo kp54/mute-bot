@@ -21,10 +21,40 @@ const createCommandContext = (message: Message): CommandContext => {
     await message.channel.send(text);
   };
 
+  const threadify = async (name: string) => {
+    if (message.channel.isThread()) {
+      return {
+        channelId: message.channel.id,
+        author,
+        reply,
+        post,
+        threadify,
+      };
+    }
+
+    const thread = await message.startThread({ name });
+    const replyThread = async (_text: string) => {
+      throw new Error('the beginning of the thread cannot be replied.');
+    };
+    const postThread = async (text: string) => {
+      await thread.send(text);
+    };
+
+    return {
+      channelId: thread.id,
+      author,
+      reply: replyThread,
+      post: postThread,
+      threadify,
+    };
+  };
+
   return {
+    channelId: message.channel.id,
     author,
     reply,
     post,
+    threadify,
   };
 };
 
