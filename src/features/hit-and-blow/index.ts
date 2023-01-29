@@ -50,8 +50,10 @@ const handleInit = async (ctx: CommandContext, games: Games) => {
     return;
   }
 
-  games.set(ctx.channelId, newGame());
-  await ctx.post(
+  const threadCtx = await ctx.threadify(genName());
+
+  games.set(threadCtx.channelId, newGame());
+  await threadCtx.post(
     ['** hit and blow **', '4桁の10進数を入力してください'].join('\n')
   );
 };
@@ -66,8 +68,10 @@ const handleAttempt = async (
     return;
   }
 
+  const threadCtx = await ctx.threadify(genName());
+
   if (!validate(attempt)) {
-    await ctx.post('エラー');
+    await threadCtx.post('エラー');
     return;
   }
 
@@ -87,12 +91,12 @@ const handleAttempt = async (
   }
 
   if (result.hit === DIGITS) {
-    await ctx.post(['正解', `試行回数: ${game.attempts}`].join('\n'));
-    games.delete(ctx.channelId);
+    await threadCtx.post(['正解', `試行回数: ${game.attempts}`].join('\n'));
+    games.delete(threadCtx.channelId);
     return;
   }
 
-  await ctx.post(`Hit: ${result.hit}, Blow: ${result.blow}`);
+  await threadCtx.post(`Hit: ${result.hit}, Blow: ${result.blow}`);
 };
 
 export default defineFeature(() => {
@@ -102,16 +106,14 @@ export default defineFeature(() => {
     matcher: ({ prefix }) =>
       new RegExp(`(?<init>^${prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`),
     onCommand: async (ctx, match) => {
-      const threadCtx = await ctx.threadify(genName());
-
       if (match.groups?.init !== undefined) {
-        await handleInit(threadCtx, games);
+        await handleInit(ctx, games);
         return;
       }
 
       const attempt = match.groups?.attempt;
       if (attempt !== undefined) {
-        await handleAttempt(threadCtx, games, attempt);
+        await handleAttempt(ctx, games, attempt);
       }
     },
   };
