@@ -100,7 +100,7 @@ export default defineFeature(() => {
 
   return {
     matcher: ({ prefix }) =>
-      new RegExp(`^(?<init>${prefix}hb)|(?<attempt>[0-9]{${DIGITS}})$`),
+      new RegExp(`(?<init>^${prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`),
     onCommand: async (ctx, match) => {
       const threadCtx = await ctx.threadify(genName());
 
