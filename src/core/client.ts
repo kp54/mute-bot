@@ -23,6 +23,7 @@ const createThreadCommandContext = (message: Message): ThreadCommandContext => {
   };
 
   return {
+    type: 'THREAD',
     threadId: message.channel.id,
     author,
     post,
@@ -53,6 +54,7 @@ const createChannelCommandContext = (
     };
 
     return {
+      type: 'THREAD',
       threadId: thread.id,
       author,
       post: postThread,
@@ -60,6 +62,7 @@ const createChannelCommandContext = (
   };
 
   return {
+    type: 'CHANNEL',
     channelId: message.channel.id,
     author,
     reply,

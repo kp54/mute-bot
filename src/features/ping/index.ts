@@ -4,6 +4,8 @@ export default defineFeature(() => ({
   matcher: ({ prefix }) => new RegExp(`^${prefix}ping$`),
 
   onCommand: async (ctx) => {
-    await ctx.reply('pong!');
+    if (ctx.type === 'CHANNEL') {
+      await ctx.reply('pong!');
+    }
   },
 }));

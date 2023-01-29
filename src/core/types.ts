@@ -1,4 +1,5 @@
 export type ChannelCommandContext = {
+  type: 'CHANNEL';
   channelId: string;
   author: {
     id: string;
@@ -10,6 +11,7 @@ export type ChannelCommandContext = {
 };
 
 export type ThreadCommandContext = {
+  type: 'THREAD';
   threadId: string;
   author: {
     id: string;

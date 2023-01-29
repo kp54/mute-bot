@@ -1,5 +1,5 @@
 import { defineFeature } from '../../core/feature.js';
-import { CommandContext } from '../../core/types.js';
+import { ChannelCommandContext } from '../../core/types.js';
 import { pokemonTypes, typeResistances } from './constants.js';
 import {
   combineResistances,
@@ -8,7 +8,7 @@ import {
 } from './core.js';
 
 const post = async (
-  ctx: CommandContext,
+  ctx: ChannelCommandContext,
   resistance: readonly number[],
   answer: readonly string[]
 ) => {
@@ -26,6 +26,10 @@ const post = async (
 export default defineFeature(() => ({
   matcher: ({ prefix }) => new RegExp(`^${prefix}pt$`),
   onCommand: async (ctx, _match, _args) => {
+    if (ctx.type !== 'CHANNEL') {
+      return;
+    }
+
     const [type1, type2] = randomType();
 
     if (type2 === null) {
