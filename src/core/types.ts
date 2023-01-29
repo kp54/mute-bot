@@ -1,4 +1,4 @@
-export type CommandContext = {
+export type ChannelCommandContext = {
   channelId: string;
   author: {
     id: string;
@@ -6,8 +6,19 @@ export type CommandContext = {
   };
   reply: (message: string) => Promise<void>;
   post: (message: string) => Promise<void>;
-  threadify: (name: string) => Promise<CommandContext>;
+  threadify: (name: string) => Promise<ThreadCommandContext>;
 };
+
+export type ThreadCommandContext = {
+  threadId: string;
+  author: {
+    id: string;
+    username: string;
+  };
+  post: (message: string) => Promise<void>;
+};
+
+export type CommandContext = ChannelCommandContext | ThreadCommandContext;
 
 export type Feature = {
   matcher: RegExp;
