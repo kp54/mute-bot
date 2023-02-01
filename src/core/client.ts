@@ -1,4 +1,10 @@
-import { Client, Intents, Message } from 'discord.js';
+import {
+  ChannelType,
+  Client,
+  Events,
+  GatewayIntentBits,
+  Message,
+} from 'discord.js';
 import {
   ChannelCommandContext,
   CommandContext,
@@ -72,11 +78,11 @@ const createChannelCommandContext = (
 };
 
 const createCommandContext = (message: Message): CommandContext | null => {
-  if (message.channel.type === 'GUILD_TEXT') {
+  if (message.channel.type === ChannelType.GuildText) {
     return createChannelCommandContext(message);
   }
 
-  if (message.channel.type === 'GUILD_PUBLIC_THREAD') {
+  if (message.channel.type === ChannelType.PublicThread) {
     return createThreadCommandContext(message);
   }
 
@@ -85,23 +91,23 @@ const createCommandContext = (message: Message): CommandContext | null => {
 
 export const createClient = (options: CreateClientOptions) => {
   const client = new Client({
-    intents: [
-      Intents.FLAGS.GUILDS,
-      Intents.FLAGS.GUILD_MESSAGES,
-      Intents.FLAGS.MESSAGE_CONTENT,
-    ],
+    intents:
+      // eslint-disable-next-line no-bitwise
+      GatewayIntentBits.Guilds |
+      GatewayIntentBits.GuildMessages |
+      GatewayIntentBits.MessageContent,
   });
 
   const features = (options.features ?? []).map((feat) =>
     feat({ prefix: options.prefix })
   );
 
-  client.on('ready', () => {
+  client.on(Events.ClientReady, () => {
     // eslint-disable-next-line no-console
     console.log(`Logged in as ${client.user?.tag}!`);
   });
 
-  client.on('messageCreate', (message) => {
+  client.on(Events.MessageCreate, (message) => {
     if (message.author.id === client.user?.id) {
       return;
     }
