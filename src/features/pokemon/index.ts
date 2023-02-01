@@ -23,8 +23,8 @@ const post = async (
   await ctx.reply(lines.join('\n'));
 };
 
-export default defineFeature(() => ({
-  matcher: ({ prefix }) => new RegExp(`^${prefix}pt$`),
+export default defineFeature(({ prefix }) => ({
+  matcher: new RegExp(`^${prefix}pt$`),
   onCommand: async (ctx, _match, _args) => {
     if (ctx.type !== 'CHANNEL') {
       return;

@@ -110,12 +110,13 @@ const handleAttempt = async (
   await ctx.post(`Hit: ${result.hit}, Blow: ${result.blow}`);
 };
 
-export default defineFeature(() => {
+export default defineFeature(({ prefix }) => {
   const games = new Map<string, Game>();
 
   return {
-    matcher: ({ prefix }) =>
-      new RegExp(`(?<init>^${prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`),
+    matcher: new RegExp(
+      `(?<init>^${prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`
+    ),
     onCommand: async (ctx, match) => {
       if (match.groups?.init !== undefined) {
         await handleInit(ctx, games);

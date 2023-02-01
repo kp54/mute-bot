@@ -1,7 +1,7 @@
 import { defineFeature } from '../../core/feature.js';
 
-export default defineFeature(() => ({
-  matcher: ({ prefix }) => new RegExp(`^${prefix}ping$`),
+export default defineFeature(({ prefix }) => ({
+  matcher: new RegExp(`^${prefix}ping$`),
 
   onCommand: async (ctx) => {
     if (ctx.type === 'CHANNEL') {

@@ -31,8 +31,8 @@ export type Feature = {
   ) => Promise<void>;
 };
 
-export type FeatureOptions = {
+export type SetupContext = {
   prefix: string;
 };
 
-export type FeatureFactory = (options: FeatureOptions) => Feature;
+export type FeatureFactory = (options: SetupContext) => Feature;

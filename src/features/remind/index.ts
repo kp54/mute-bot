@@ -10,7 +10,7 @@ const useage = async (ctx: ChannelCommandContext) => {
   await ctx.reply('構文: remind <minute> <message>');
 };
 
-export default defineFeature(() => {
+export default defineFeature(({ prefix }) => {
   const reminders = {
     value: new Array<Reminder>(),
   };
@@ -30,7 +30,7 @@ export default defineFeature(() => {
   }, tickInterval);
 
   return {
-    matcher: ({ prefix }) => new RegExp(`^${prefix}remind$`),
+    matcher: new RegExp(`^${prefix}remind$`),
     onCommand: async (ctx, _match, args) => {
       if (ctx.type !== 'CHANNEL') {
         return;

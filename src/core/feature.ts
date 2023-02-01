@@ -1,20 +1,19 @@
-import { Feature, FeatureFactory, FeatureOptions } from './types.js';
+import { Feature, FeatureFactory, SetupContext } from './types.js';
 
 type FeatureDefinition = {
-  matcher: (options: FeatureOptions) => RegExp;
+  matcher: RegExp;
   onCommand?: Feature['onCommand'];
 };
 
 const noop = () => Promise.resolve();
 
 export const defineFeature =
-  (definition: () => FeatureDefinition): FeatureFactory =>
-  (options: FeatureOptions): Feature => {
-    const instance = definition();
-    const matcher = instance.matcher(options);
+  (definition: (ctx: SetupContext) => FeatureDefinition): FeatureFactory =>
+  (ctx: SetupContext): Feature => {
+    const instance = definition(ctx);
 
     return {
-      matcher,
+      matcher: instance.matcher,
       onCommand: instance.onCommand ?? noop,
     };
   };
