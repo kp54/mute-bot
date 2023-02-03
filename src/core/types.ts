@@ -32,10 +32,10 @@ export type Feature = {
 };
 
 export type Memory<T> = {
-  get: (key: string) => T | undefined;
-  set: (key: string, value: T) => void;
-  delete: (key: string) => void;
-  entries: () => [string, T][];
+  get: (key: string) => Promise<T | undefined>;
+  set: (key: string, value: T) => Promise<void>;
+  delete: (key: string) => Promise<void>;
+  entries: () => Promise<[string, T][]>;
 };
 
 export type SetupContext = {

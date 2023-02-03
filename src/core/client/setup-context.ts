@@ -1,4 +1,5 @@
 import { Client } from 'discord.js';
+import { connectStorage } from '../memory.js';
 import { CreateClientOptions, Memory, SetupContext } from '../types.js';
 
 export const createSetupContext = (
@@ -19,32 +20,33 @@ export const createSetupContext = (
     await channel.send(message);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const memories = new Map<string, Memory<any>>();
-
   const requestMemory = <T>(id: string) => {
-    const mem: Memory<T> | undefined = memories.get(id);
-    if (mem !== undefined) {
-      return mem;
-    }
+    const storage = connectStorage();
 
-    const container: Record<string, T | undefined> = Object.create(null);
-
-    const handlers: Memory<T> = {
-      get: (key) => container[key],
-      set: (key, value) => {
-        container[key] = value;
+    const methods: Memory<T> = {
+      get: async (key) => {
+        const memory = await storage.get(id);
+        return memory[key];
       },
-      delete: (key) => {
-        delete container[key];
+      set: async (key, value) => {
+        const memory = await storage.get(id);
+        memory[key] = value;
+        await storage.set(id, memory);
       },
-      entries: () =>
-        Object.entries(container).filter(
+      delete: async (key) => {
+        const memory = await storage.get(id);
+        delete memory[key];
+        await storage.set(id, memory);
+      },
+      entries: async () => {
+        const memory = await storage.get(id);
+        return Object.entries(memory).filter(
           (item): item is [string, T] => item !== undefined
-        ),
+        );
+      },
     };
 
-    return handlers;
+    return methods;
   };
 
   return {

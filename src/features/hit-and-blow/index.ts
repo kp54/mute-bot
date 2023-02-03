@@ -44,12 +44,12 @@ const validate = (attempt: string) => {
 const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
   if (ctx.type === 'THREAD') {
     if (games.get(ctx.threadId) !== undefined) {
-      games.delete(ctx.threadId);
+      await games.delete(ctx.threadId);
       await ctx.post('ゲームを破棄しました');
       return;
     }
 
-    games.set(ctx.threadId, newGame());
+    await games.set(ctx.threadId, newGame());
     await ctx.post(
       ['** hit and blow **', '4桁の10進数を入力してください'].join('\n')
     );
@@ -59,7 +59,7 @@ const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
 
   const threadCtx = await ctx.threadify(genName());
 
-  games.set(threadCtx.threadId, newGame());
+  await games.set(threadCtx.threadId, newGame());
   await threadCtx.post(
     ['** hit and blow **', '4桁の10進数を入力してください'].join('\n')
   );
@@ -74,7 +74,7 @@ const handleAttempt = async (
     return;
   }
 
-  const game = games.get(ctx.threadId);
+  const game = await games.get(ctx.threadId);
   if (game === undefined) {
     return;
   }
@@ -101,11 +101,12 @@ const handleAttempt = async (
 
   if (result.hit === DIGITS) {
     await ctx.post(['正解', `試行回数: ${game.attempts}`].join('\n'));
-    games.delete(ctx.threadId);
+    await games.delete(ctx.threadId);
     return;
   }
 
   await ctx.post(`Hit: ${result.hit}, Blow: ${result.blow}`);
+  await games.set(ctx.threadId, game);
 };
 
 export default defineFeature(({ prefix, requestMemory }) => {

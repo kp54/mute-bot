@@ -17,23 +17,33 @@ export default defineFeature((setup) => {
     '5a834c35-7c00-43c6-9d79-5ae7aef9f755'
   );
 
-  const tickInterval = 24000;
-  setTimeout(function tick() {
+  const interval = 24000;
+  const tick = async (): Promise<void> => {
     const now = Date.now();
-    reminders.entries().forEach(([key, reminder]) => {
-      if (now < reminder.dueAt) {
-        return;
-      }
+    const entries = await reminders.entries();
 
-      void setup.post(
-        reminder.channelId,
-        `<@!${reminder.authorId}> リマインダー ${reminder.message}`
-      );
+    await Promise.all(
+      entries.map(async ([key, reminder]) => {
+        if (now < reminder.dueAt) {
+          return;
+        }
 
-      reminders.delete(key);
-    });
-    setTimeout(tick, tickInterval);
-  }, tickInterval);
+        await setup.post(
+          reminder.channelId,
+          `<@!${reminder.authorId}> リマインダー ${reminder.message}`
+        );
+
+        await reminders.delete(key);
+      })
+    );
+
+    setTimeout(() => {
+      void tick();
+    }, interval);
+  };
+  setTimeout(() => {
+    void tick();
+  }, interval);
 
   return {
     matcher: new RegExp(`^${setup.prefix}remind$`),
@@ -56,7 +66,7 @@ export default defineFeature((setup) => {
       const dueAt = Date.now() + offset * 60000;
       const message = args.slice(1).join(' ');
 
-      reminders.set(Math.random().toString(), {
+      await reminders.set(Math.random().toString(), {
         dueAt,
         channelId: ctx.channelId,
         authorId: ctx.author.id,
