@@ -3,15 +3,17 @@ import { ChannelCommandContext } from '../../core/types.js';
 
 type Reminder = {
   dueAt: number;
-  handler: () => void;
+  channelId: string;
+  authorId: string;
+  message: string;
 };
 
 const useage = async (ctx: ChannelCommandContext) => {
   await ctx.reply('構文: remind <minute> <message>');
 };
 
-export default defineFeature(({ prefix, requestMemory }) => {
-  const reminders = requestMemory<Reminder>(
+export default defineFeature((setup) => {
+  const reminders = setup.requestMemory<Reminder>(
     '5a834c35-7c00-43c6-9d79-5ae7aef9f755'
   );
 
@@ -23,14 +25,18 @@ export default defineFeature(({ prefix, requestMemory }) => {
         return;
       }
 
-      reminder.handler();
+      void setup.post(
+        reminder.channelId,
+        `<@!${reminder.authorId}> リマインダー ${reminder.message}`
+      );
+
       reminders.delete(key);
     });
     setTimeout(tick, tickInterval);
   }, tickInterval);
 
   return {
-    matcher: new RegExp(`^${prefix}remind$`),
+    matcher: new RegExp(`^${setup.prefix}remind$`),
     onCommand: async (ctx, _match, args) => {
       if (ctx.type !== 'CHANNEL') {
         return;
@@ -52,9 +58,9 @@ export default defineFeature(({ prefix, requestMemory }) => {
 
       reminders.set(Math.random().toString(), {
         dueAt,
-        handler: () => {
-          void ctx.post(`<@!${ctx.author.id}> リマインダー ${message}`);
-        },
+        channelId: ctx.channelId,
+        authorId: ctx.author.id,
+        message,
       });
 
       await ctx.reply('リマインダーを設定しました');

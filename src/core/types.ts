@@ -40,6 +40,7 @@ export type Memory<T> = {
 
 export type SetupContext = {
   prefix: string;
+  post: (channelId: string, message: string) => Promise<void>;
   requestMemory: <T>(id: string) => Memory<T>;
 };
 

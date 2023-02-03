@@ -13,7 +13,7 @@ export const createClient = (options: CreateClientOptions) => {
       GatewayIntentBits.MessageContent,
   });
 
-  const setupCtx = createSetupContext(options);
+  const setupCtx = createSetupContext(client, options);
   const features = (options.features ?? []).map((feat) => feat(setupCtx));
 
   client.on(Events.ClientReady, () => {
