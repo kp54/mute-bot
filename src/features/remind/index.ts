@@ -10,21 +10,21 @@ const useage = async (ctx: ChannelCommandContext) => {
   await ctx.reply('構文: remind <minute> <message>');
 };
 
-export default defineFeature(({ prefix }) => {
-  const reminders = {
-    value: new Array<Reminder>(),
-  };
+export default defineFeature(({ prefix, requestMemory }) => {
+  const reminders = requestMemory<Reminder>(
+    '5a834c35-7c00-43c6-9d79-5ae7aef9f755'
+  );
 
-  const tickInterval = 64000;
+  const tickInterval = 24000;
   setTimeout(function tick() {
     const now = Date.now();
-    reminders.value = reminders.value.filter((reminder) => {
+    reminders.entries().forEach(([key, reminder]) => {
       if (now < reminder.dueAt) {
-        return true;
+        return;
       }
 
       reminder.handler();
-      return false;
+      reminders.delete(key);
     });
     setTimeout(tick, tickInterval);
   }, tickInterval);
@@ -50,7 +50,7 @@ export default defineFeature(({ prefix }) => {
       const dueAt = Date.now() + offset * 60000;
       const message = args.slice(1).join(' ');
 
-      reminders.value.push({
+      reminders.set(Math.random().toString(), {
         dueAt,
         handler: () => {
           void ctx.post(`<@!${ctx.author.id}> リマインダー ${message}`);

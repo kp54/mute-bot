@@ -1,5 +1,5 @@
 import { defineFeature } from '../../core/feature.js';
-import { CommandContext } from '../../core/types.js';
+import { CommandContext, Memory } from '../../core/types.js';
 
 const DIGITS = 4;
 
@@ -7,8 +7,6 @@ type Game = {
   attempts: number;
   answer: string[];
 };
-
-type Games = Map<string, Game>;
 
 const genName = () => {
   const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -43,9 +41,9 @@ const validate = (attempt: string) => {
   return true;
 };
 
-const handleInit = async (ctx: CommandContext, games: Games) => {
+const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
   if (ctx.type === 'THREAD') {
-    if (games.has(ctx.threadId)) {
+    if (games.get(ctx.threadId) !== undefined) {
       games.delete(ctx.threadId);
       await ctx.post('ゲームを破棄しました');
       return;
@@ -69,7 +67,7 @@ const handleInit = async (ctx: CommandContext, games: Games) => {
 
 const handleAttempt = async (
   ctx: CommandContext,
-  games: Games,
+  games: Memory<Game>,
   attempt: string
 ) => {
   if (ctx.type !== 'THREAD') {
@@ -110,8 +108,8 @@ const handleAttempt = async (
   await ctx.post(`Hit: ${result.hit}, Blow: ${result.blow}`);
 };
 
-export default defineFeature(({ prefix }) => {
-  const games = new Map<string, Game>();
+export default defineFeature(({ prefix, requestMemory }) => {
+  const games = requestMemory<Game>('a0073f1c-0603-43b9-867b-81e54289d6d5');
 
   return {
     matcher: new RegExp(

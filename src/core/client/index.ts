@@ -1,13 +1,8 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
-import { FeatureFactory } from '../types.js';
+import { CreateClientOptions } from '../types.js';
 import { createCommandContext } from './command-context.js';
 import { parseCommand } from './parse-command.js';
-
-type CreateClientOptions = {
-  discordToken: string;
-  prefix: string;
-  features?: FeatureFactory[];
-};
+import { createSetupContext } from './setup-context.js';
 
 export const createClient = (options: CreateClientOptions) => {
   const client = new Client({
@@ -18,9 +13,8 @@ export const createClient = (options: CreateClientOptions) => {
       GatewayIntentBits.MessageContent,
   });
 
-  const features = (options.features ?? []).map((feat) =>
-    feat({ prefix: options.prefix })
-  );
+  const setupCtx = createSetupContext(options);
+  const features = (options.features ?? []).map((feat) => feat(setupCtx));
 
   client.on(Events.ClientReady, () => {
     // eslint-disable-next-line no-console
@@ -37,11 +31,14 @@ export const createClient = (options: CreateClientOptions) => {
       return;
     }
 
-    const content = message.content.trim();
-    const argv = parseCommand(content);
+    const argv = parseCommand(message.content);
 
     if (argv === null) {
       await message.reply('パースエラー');
+      return;
+    }
+
+    if (argv.length === 0) {
       return;
     }
 

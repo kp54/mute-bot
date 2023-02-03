@@ -31,8 +31,22 @@ export type Feature = {
   ) => Promise<void>;
 };
 
+export type Memory<T> = {
+  get: (key: string) => T | undefined;
+  set: (key: string, value: T) => void;
+  delete: (key: string) => void;
+  entries: () => [string, T][];
+};
+
 export type SetupContext = {
   prefix: string;
+  requestMemory: <T>(id: string) => Memory<T>;
 };
 
 export type FeatureFactory = (options: SetupContext) => Feature;
+
+export type CreateClientOptions = {
+  discordToken: string;
+  prefix: string;
+  features?: FeatureFactory[];
+};
