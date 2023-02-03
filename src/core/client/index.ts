@@ -1,6 +1,7 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { FeatureFactory } from '../types.js';
 import { createCommandContext } from './command-context.js';
+import { parseCommand } from './parse-command.js';
 
 type CreateClientOptions = {
   discordToken: string;
@@ -26,7 +27,7 @@ export const createClient = (options: CreateClientOptions) => {
     console.log(`Logged in as ${client.user?.tag}!`);
   });
 
-  client.on(Events.MessageCreate, (message) => {
+  client.on(Events.MessageCreate, async (message) => {
     if (message.author.id === client.user?.id) {
       return;
     }
@@ -37,15 +38,26 @@ export const createClient = (options: CreateClientOptions) => {
     }
 
     const content = message.content.trim();
-    const [head, ...rest] = content.split(/\s+/); // TODO: parse quotes
+    const argv = parseCommand(content);
 
-    features.forEach((feat) => {
-      const match = head.match(feat.matcher);
+    if (argv === null) {
+      await message.reply('パースエラー');
+      return;
+    }
 
-      if (match !== null) {
-        void feat.onCommand(ctx, match, rest);
-      }
-    });
+    const [head, ...rest] = argv;
+
+    await Promise.all(
+      features.map((feat) => {
+        const match = head.match(feat.matcher);
+
+        if (match === null) {
+          return null;
+        }
+
+        return feat.onCommand(ctx, match, rest);
+      })
+    );
   });
 
   const run = async () => {
