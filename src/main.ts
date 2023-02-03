@@ -1,5 +1,5 @@
 import config from './config.js';
-import { createClient } from './core/client.js';
+import { createClient } from './core/client/index.js';
 import echo from './features/echo/index.js';
 import hitAndBlow from './features/hit-and-blow/index.js';
 import ping from './features/ping/index.js';
