@@ -43,7 +43,7 @@ const validate = (attempt: string) => {
 
 const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
   if (ctx.type === 'THREAD') {
-    if (games.get(ctx.threadId) !== undefined) {
+    if ((await games.get(ctx.threadId)) !== undefined) {
       await games.delete(ctx.threadId);
       await ctx.post('ゲームを破棄しました');
       return;
