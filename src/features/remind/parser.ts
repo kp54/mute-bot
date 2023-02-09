@@ -8,7 +8,7 @@ const Action = {
 // tuple type helper
 const t = <T extends ReadonlyArray<unknown>>(...value: T) => value;
 
-const parse = (args: string[]) => {
+export const parse = (args: string[]) => {
   const usage = t(Action.Usage);
 
   if (args.length === 0 || args[0] === 'help') {

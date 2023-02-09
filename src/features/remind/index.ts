@@ -1,5 +1,6 @@
 import { defineFeature } from '../../core/feature.js';
 import { ChannelCommandContext } from '../../core/types.js';
+import { parse } from './parser.js';
 
 type Reminder = {
   dueAt: number;
@@ -8,19 +9,40 @@ type Reminder = {
   message: string;
 };
 
-const useage = async (ctx: ChannelCommandContext) => {
-  await ctx.reply('構文: remind <minute> <message>');
+const usage = async (ctx: ChannelCommandContext) => {
+  await ctx.reply(
+    [
+      '```',
+      '使い方',
+      '',
+      '/remind after <minute> <content>',
+      ' リマインダーを <minute> 分後に設定',
+      '',
+      '/remind at <datetime> <content>',
+      '  リマインダーを <datetime> に設定',
+      '',
+      '/remind list',
+      '  リマインダーの一覧を表示',
+      '',
+      '/remind delete <index>',
+      '  リマインダーを削除',
+      '',
+      '/remind [help]',
+      '  このガイドを表示',
+      '```',
+    ].join('\n')
+  );
 };
 
 export default defineFeature((setup) => {
-  const reminders = setup.requestMemory<Reminder>(
+  const memory = setup.requestMemory<Reminder>(
     '5a834c35-7c00-43c6-9d79-5ae7aef9f755'
   );
 
-  const interval = 24000;
+  const interval = 23209;
   const tick = async (): Promise<void> => {
     const now = Date.now();
-    const entries = await reminders.entries();
+    const entries = await memory.entries();
 
     await Promise.all(
       entries.map(async ([key, reminder]) => {
@@ -33,7 +55,7 @@ export default defineFeature((setup) => {
           `<@!${reminder.authorId}> リマインダー ${reminder.message}`
         );
 
-        await reminders.delete(key);
+        await memory.delete(key);
       })
     );
 
@@ -45,6 +67,13 @@ export default defineFeature((setup) => {
     void tick();
   }, interval);
 
+  const byAuthor = async (authorId: string) => {
+    const reminders = (await memory.entries()).filter(
+      ([_key, reminder]) => reminder.authorId === authorId
+    );
+    return reminders ?? [];
+  };
+
   return {
     matcher: new RegExp(`^${setup.prefix}remind$`),
     onCommand: async (ctx, _match, args) => {
@@ -52,28 +81,56 @@ export default defineFeature((setup) => {
         return;
       }
 
-      if (args.length < 2) {
-        await useage(ctx);
-        return;
+      const parsed = parse(args);
+
+      switch (parsed[0]) {
+        case 'Add': {
+          const [_, dueAt, message] = parsed;
+
+          await memory.set(Math.random().toString(), {
+            dueAt,
+            channelId: ctx.channelId,
+            authorId: ctx.author.id,
+            message,
+          });
+
+          const datetime = new Date(dueAt).toLocaleString('ja-JP');
+          await ctx.reply(`${datetime} にリマインダーを設定しました`);
+
+          return;
+        }
+
+        case 'List': {
+          const lines = (await byAuthor(ctx.author.id)).map(
+            ([_key, reminder], i) => `${i}: ${reminder.message}`
+          );
+          await ctx.reply(['```', ...lines, '```'].join('\n'));
+
+          return;
+        }
+
+        case 'Delete': {
+          const [_, indexes] = parsed;
+
+          const reminders = await byAuthor(ctx.author.id);
+          const toRemove = reminders.filter((_x, i) => indexes.includes(i));
+
+          await Promise.all(
+            toRemove.map(([key, _reminder]) => memory.delete(key))
+          );
+
+          await ctx.reply('リマインダーを削除しました');
+
+          return;
+        }
+
+        case 'Usage':
+          await usage(ctx);
+          return;
+
+        default:
+          throw new Error();
       }
-
-      const offset = Number(args[0]);
-      if (Number.isNaN(offset) || offset < 0) {
-        await useage(ctx);
-        return;
-      }
-
-      const dueAt = Date.now() + offset * 60000;
-      const message = args.slice(1).join(' ');
-
-      await reminders.set(Math.random().toString(), {
-        dueAt,
-        channelId: ctx.channelId,
-        authorId: ctx.author.id,
-        message,
-      });
-
-      await ctx.reply('リマインダーを設定しました');
     },
   };
 });
