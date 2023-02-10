@@ -75,7 +75,7 @@ export default defineFeature((setup) => {
   };
 
   return {
-    matcher: new RegExp(`^${setup.prefix}remind$`),
+    matcher: new RegExp(`^${setup.config.prefix}remind$`),
     onCommand: async (ctx, _match, args) => {
       if (ctx.type !== 'CHANNEL') {
         return;

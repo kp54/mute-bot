@@ -1,6 +1,6 @@
 import { defineFeature } from '../../core/feature.js';
 
-export default defineFeature(({ prefix }) => ({
+export default defineFeature(({ config: { prefix } }) => ({
   matcher: new RegExp(`^${prefix}echo$`),
 
   onCommand: async (ctx, _, args) => {

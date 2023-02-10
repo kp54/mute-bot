@@ -109,12 +109,12 @@ const handleAttempt = async (
   await games.set(ctx.threadId, game);
 };
 
-export default defineFeature(({ prefix, requestMemory }) => {
+export default defineFeature(({ config, requestMemory }) => {
   const games = requestMemory<Game>('a0073f1c-0603-43b9-867b-81e54289d6d5');
 
   return {
     matcher: new RegExp(
-      `(?<init>^${prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`
+      `(?<init>^${config.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`
     ),
     onCommand: async (ctx, match) => {
       if (match.groups?.init !== undefined) {
