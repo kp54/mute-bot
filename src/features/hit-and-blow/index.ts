@@ -114,7 +114,7 @@ export default defineFeature(({ config, requestMemory }) => {
 
   return {
     matcher: new RegExp(
-      `(?<init>^${config.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`
+      `(?<init>^${config.core.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`
     ),
     onCommand: async (ctx, match) => {
       if (match.groups?.init !== undefined) {

@@ -52,6 +52,8 @@ export type CreateClientOptions = {
 };
 
 export interface Config {
-  discordToken: string;
-  prefix: string;
+  core: {
+    discordToken: string;
+    prefix: string;
+  };
 }
