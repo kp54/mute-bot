@@ -39,7 +39,7 @@ export type Memory<T> = {
 };
 
 export type SetupContext = {
-  prefix: string;
+  config: Config;
   post: (channelId: string, message: string) => Promise<void>;
   requestMemory: <T>(id: string) => Memory<T>;
 };
@@ -47,7 +47,11 @@ export type SetupContext = {
 export type FeatureFactory = (options: SetupContext) => Feature;
 
 export type CreateClientOptions = {
-  discordToken: string;
-  prefix: string;
+  config: Config;
   features?: FeatureFactory[];
 };
+
+export interface Config {
+  discordToken: string;
+  prefix: string;
+}

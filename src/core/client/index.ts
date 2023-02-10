@@ -58,7 +58,7 @@ export const createClient = (options: CreateClientOptions) => {
   });
 
   const run = async () => {
-    await client.login(options.discordToken);
+    await client.login(options.config.discordToken);
   };
 
   return {

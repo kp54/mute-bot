@@ -131,3 +131,6 @@ dist
 
 # application state
 memory.json
+
+# local settings
+config.local.ts

@@ -50,7 +50,7 @@ export const createSetupContext = (
   };
 
   return {
-    prefix: options.prefix,
+    config: options.config,
     post,
     requestMemory,
   };
