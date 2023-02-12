@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { defineFeature } from '../../core/feature.js';
 import { parse } from './parser.js';
 
@@ -5,7 +6,7 @@ declare module '../../core/types' {
   interface Config {
     remind: {
       interval: number;
-      timezone: number;
+      timezone: string;
     };
   }
 }
@@ -17,28 +18,18 @@ type Reminder = {
   message: string;
 };
 
-const formatDue = (unixtime: number) => {
-  const date = new Date(unixtime);
+const formatDue = (timezone: string, unixtime: number) =>
+  DateTime.fromMillis(unixtime)
+    .setZone(timezone)
+    .setLocale('ja-JP')
+    .toLocaleString(DateTime.DATETIME_FULL);
 
-  const f = (x: number, l: number) => x.toString().padStart(l, '0');
-
-  const year = f(date.getFullYear(), 4);
-  const month = f(date.getMonth() + 1, 2);
-  const day = f(date.getDay(), 2);
-
-  const hour = f(date.getHours(), 2);
-  const minute = f(date.getMinutes(), 2);
-  const second = f(date.getSeconds(), 2);
-
-  return `${year}/${month}/${day} ${hour}:${minute}:${second}`;
-};
-
-export default defineFeature((setup) => {
-  const memory = setup.requestMemory<Reminder>(
+export default defineFeature(({ config, requestMemory, post }) => {
+  const memory = requestMemory<Reminder>(
     '5a834c35-7c00-43c6-9d79-5ae7aef9f755'
   );
 
-  const { interval } = setup.config.remind;
+  const { interval } = config.remind;
   const tick = async (): Promise<void> => {
     const now = Date.now();
     const entries = await memory.entries();
@@ -49,7 +40,7 @@ export default defineFeature((setup) => {
           return;
         }
 
-        await setup.post(
+        await post(
           reminder.channelId,
           `<@!${reminder.authorId}> リマインダー ${reminder.message}`
         );
@@ -74,13 +65,13 @@ export default defineFeature((setup) => {
   };
 
   return {
-    matcher: new RegExp(`^${setup.config.core.prefix}remind$`),
+    matcher: new RegExp(`^${config.core.prefix}remind$`),
     onCommand: async (ctx, _match, args) => {
       if (ctx.type !== 'CHANNEL') {
         return;
       }
 
-      const parsed = parse(args);
+      const parsed = parse(config.remind.timezone, args);
 
       switch (parsed[0]) {
         case 'Add': {
@@ -93,7 +84,12 @@ export default defineFeature((setup) => {
             message,
           });
 
-          await ctx.reply(`${formatDue(dueAt)} にリマインダーを設定しました`);
+          await ctx.reply(
+            `${formatDue(
+              config.remind.timezone,
+              dueAt
+            )} にリマインダーを設定しました`
+          );
 
           return;
         }
@@ -101,7 +97,9 @@ export default defineFeature((setup) => {
         case 'List': {
           const lines = (await byAuthor(ctx.author.id)).map(
             ([_key, reminder], i) =>
-              `${i}: ${formatDue(reminder.dueAt)}: ${reminder.message}`
+              `${i}: ${formatDue(config.remind.timezone, reminder.dueAt)}: ${
+                reminder.message
+              }`
           );
 
           await ctx.reply(['```', ...lines, '```'].join('\n'));
@@ -158,6 +156,11 @@ export default defineFeature((setup) => {
               '`/remind help` でガイドを表示します',
             ].join('\n')
           );
+
+          return;
+
+        case 'Past':
+          await ctx.reply('過去の日時は設定できません');
 
           return;
 
