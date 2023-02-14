@@ -1,130 +1,129 @@
-const enumerate = <T>(arr: ReadonlyArray<T>) =>
-  arr.map((x, i) => [i, x] as const);
+class EvalError extends Error {
+  kind: 'Bottom' | 'NaN';
 
-const bottom = (i: number) => ['Bottom', i] as const;
+  index: number;
 
-export const evaluate = (tokens: ReadonlyArray<string>) => {
-  if (tokens.length === 0) {
-    return ['Empty'] as const;
+  constructor(kind: 'Bottom' | 'NaN', index: number) {
+    super();
+    this.kind = kind;
+    this.index = index;
   }
+}
 
+const evaluateInner = (tokens: ReadonlyArray<string>) => {
   const stack: number[] = [];
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const [i, token] of enumerate(tokens)) {
+  const push = (line: number, value: number) => {
+    if (Number.isNaN(value)) {
+      throw new EvalError('NaN', line);
+    }
+    stack.push(value);
+  };
+
+  const pop = (line: number) => {
+    const value = stack.pop();
+    if (value === undefined) {
+      throw new EvalError('Bottom', line);
+    }
+    return value;
+  };
+
+  tokens.forEach((token, i) => {
     switch (token) {
       case '+':
       case 'add': {
-        const y = stack.pop();
-        const x = stack.pop();
+        const y = pop(i);
+        const x = pop(i);
 
-        if (x === undefined || y === undefined) {
-          return bottom(i);
-        }
-
-        stack.push(x + y);
+        push(i, x + y);
 
         break;
       }
 
       case '-':
       case 'sub': {
-        const y = stack.pop();
-        const x = stack.pop();
+        const y = pop(i);
+        const x = pop(i);
 
-        if (x === undefined || y === undefined) {
-          return bottom(i);
-        }
-
-        stack.push(x - y);
+        push(i, x - y);
 
         break;
       }
 
       case '*':
       case 'mul': {
-        const y = stack.pop();
-        const x = stack.pop();
+        const y = pop(i);
+        const x = pop(i);
 
-        if (x === undefined || y === undefined) {
-          return bottom(i);
-        }
-
-        stack.push(x * y);
+        push(i, x * y);
 
         break;
       }
 
       case '/':
       case 'div': {
-        const y = stack.pop();
-        const x = stack.pop();
+        const y = pop(i);
+        const x = pop(i);
 
-        if (x === undefined || y === undefined) {
-          return bottom(i);
-        }
-
-        stack.push(x / y);
+        push(i, x / y);
 
         break;
       }
 
       case '%':
       case 'divmod': {
-        const y = stack.pop();
-        const x = stack.pop();
+        const y = pop(i);
+        const x = pop(i);
 
-        if (x === undefined || y === undefined) {
-          return bottom(i);
-        }
-
-        stack.push(Math.trunc(x / y));
-        stack.push(x % y);
+        push(i, Math.trunc(x / y));
+        push(i, x % y);
 
         break;
       }
 
       case '_':
       case 'drop': {
-        const x = stack.pop();
-
-        if (x === undefined) {
-          return bottom(i);
-        }
+        pop(i);
 
         break;
       }
 
       case '=':
       case 'dup': {
-        const x = stack.pop();
+        const x = pop(i);
 
-        if (x === undefined) {
-          return bottom(i);
-        }
-
-        stack.push(x);
-        stack.push(x);
+        push(i, x);
+        push(i, x);
 
         break;
       }
 
       default: {
         const n = Number(token);
-        if (Number.isNaN(n)) {
-          return ['NaN', i] as const;
-        }
-        stack.push(n);
+        push(i, n);
       }
     }
+  });
+
+  const result = pop(tokens.length);
+  return result;
+};
+
+export const evaluate = (tokens: ReadonlyArray<string>) => {
+  if (tokens.length === 0) {
+    return ['Empty'] as const;
   }
 
-  const result = stack.pop();
-  if (result === undefined) {
-    return bottom(tokens.length);
-  }
+  try {
+    const result = evaluateInner(tokens);
+    return ['Ok', result] as const;
+  } catch (e) {
+    if (!(e instanceof EvalError)) {
+      throw e;
+    }
 
-  return ['Ok', result] as const;
+    return [e.kind, e.index] as const;
+  }
 };
 
 export default {
