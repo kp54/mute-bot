@@ -64,8 +64,10 @@ export default defineFeature(({ config, requestMemory, post }) => {
     return reminders ?? [];
   };
 
+  const { prefix } = config.core;
+
   return {
-    matcher: new RegExp(`^${config.core.prefix}remind$`),
+    matcher: new RegExp(`^${prefix}remind$`),
     onCommand: async (ctx, _match, args) => {
       if (ctx.type !== 'CHANNEL') {
         return;
@@ -128,19 +130,19 @@ export default defineFeature(({ config, requestMemory, post }) => {
               '```',
               '使い方',
               '',
-              '/remind after <minute> <content>',
+              `${prefix}remind after <minute> <content>`,
               ' リマインダーを <minute> 分後に設定',
               '',
-              '/remind at <datetime> <content>',
+              `${prefix}remind at <datetime> <content>`,
               '  リマインダーを <datetime> に設定',
               '',
-              '/remind list',
+              `${prefix}remind list`,
               '  リマインダーの一覧を表示',
               '',
-              '/remind delete <index>',
+              `${prefix}remind delete <index>`,
               '  リマインダーを削除',
               '',
-              '/remind [help]',
+              `${prefix}remind [help]`,
               '  このガイドを表示',
               '```',
             ].join('\n')
@@ -153,7 +155,7 @@ export default defineFeature(({ config, requestMemory, post }) => {
           await ctx.reply(
             [
               'パースエラー',
-              '`/remind help` でガイドを表示します',
+              `\`${prefix}remind help\` でガイドを表示します`,
             ].join('\n')
           );
 
