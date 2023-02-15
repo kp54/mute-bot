@@ -19,6 +19,20 @@ const parseDateTime = (timezone: string, line: string) => {
   return date.toMillis();
 };
 
+const parseAfter = (line: string) => {
+  const after = Number(line);
+  if (Number.isNaN(after) || !Number.isFinite(after)) {
+    return null;
+  }
+
+  const date = DateTime.utc().plus({ minutes: after });
+  if (!date.isValid) {
+    return null;
+  }
+
+  return date.toMillis();
+};
+
 // tuple type helper
 const t = <T extends ReadonlyArray<unknown>>(...value: T) => value;
 
@@ -30,16 +44,15 @@ export const parse = (timezone: string, args: string[]) => {
   const [command, ...rest] = args;
 
   if (command === 'after' && 1 < rest.length) {
-    const minute = Number(rest[0]);
-    if (Number.isNaN(minute)) {
+    const dueAt = parseAfter(rest[0]);
+    if (dueAt === null) {
       return t(Action.Error);
     }
 
-    if (minute < 0) {
+    if (dueAt < Date.now()) {
       return t(Action.Past);
     }
 
-    const dueAt = Date.now() + minute * 60000;
     const content = rest.slice(1).join(' ');
 
     return t(Action.Add, dueAt, content);
@@ -65,7 +78,9 @@ export const parse = (timezone: string, args: string[]) => {
   }
 
   if (command === 'delete') {
-    const indexes = rest.map((x) => Number.parseInt(x, 10));
+    const indexes = rest
+      .map((x) => Number(x))
+      .filter((x) => Number.isSafeInteger(x));
     return t(Action.Delete, indexes);
   }
 
