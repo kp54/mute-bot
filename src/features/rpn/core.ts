@@ -11,6 +11,7 @@ class EvalError extends Error {
 }
 
 const evaluateInner = (tokens: ReadonlyArray<string>) => {
+  const buffer: string[] = [];
   const stack: number[] = [];
 
   const push = (line: number, value: number) => {
@@ -42,7 +43,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
         push(i, x + y);
 
-        break;
+        return;
       }
 
       case '-':
@@ -52,7 +53,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
         push(i, x - y);
 
-        break;
+        return;
       }
 
       case '*':
@@ -62,7 +63,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
         push(i, x * y);
 
-        break;
+        return;
       }
 
       case '/':
@@ -72,7 +73,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
         push(i, x / y);
 
-        break;
+        return;
       }
 
       case '%':
@@ -83,24 +84,41 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
         push(i, Math.trunc(x / y));
         push(i, x % y);
 
-        break;
+        return;
       }
 
       case '_':
       case 'drop': {
         pop(i);
 
-        break;
+        return;
       }
 
-      case '=':
+      case '.':
       case 'dup': {
         const x = pop(i);
 
         push(i, x);
         push(i, x);
 
-        break;
+        return;
+      }
+
+      case '=':
+      case 'print': {
+        const x = pop(i);
+
+        buffer.push(x.toString());
+        push(i, x);
+
+        return;
+      }
+
+      case '$':
+      case 'stack': {
+        buffer.push(stack.join(', '));
+
+        return;
       }
 
       default: {
@@ -110,8 +128,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
     }
   });
 
-  const result = pop(tokens.length);
-  return result;
+  return buffer.join('\n');
 };
 
 export const evaluate = (tokens: ReadonlyArray<string>) => {
