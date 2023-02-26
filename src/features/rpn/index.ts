@@ -28,6 +28,13 @@ export default defineFeature(({ config }) => ({
         return;
       }
 
+      case 'Infinity': {
+        const [_type, index] = result;
+        await ctx.post(`ERR: ${index}: Encountered Infinity.`);
+
+        return;
+      }
+
       case 'Empty': {
         await ctx.post(
           [

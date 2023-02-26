@@ -1,9 +1,9 @@
 class EvalError extends Error {
-  kind: 'Bottom' | 'NaN';
+  kind: 'Bottom' | 'NaN' | 'Infinity';
 
   index: number;
 
-  constructor(kind: 'Bottom' | 'NaN', index: number) {
+  constructor(kind: 'Bottom' | 'NaN' | 'Infinity', index: number) {
     super();
     this.kind = kind;
     this.index = index;
@@ -17,6 +17,11 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
     if (Number.isNaN(value)) {
       throw new EvalError('NaN', line);
     }
+
+    if (!Number.isFinite(value)) {
+      throw new EvalError('Infinity', line);
+    }
+
     stack.push(value);
   };
 
