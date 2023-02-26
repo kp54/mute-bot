@@ -41,29 +41,29 @@ export default defineFeature(({ config }) => ({
 
     switch (result[0]) {
       case 'Ok': {
-        const [_type, value] = result;
-        await ctx.post(`OK:\n${value}`);
+        const [_type, lines] = result;
+        await ctx.post(`OK:\n${lines}`);
 
         return;
       }
 
       case 'Bottom': {
-        const [_type, index] = result;
-        await ctx.post(`ERR: ${index}: Insufficient stack.`);
+        const [_type, index, lines] = result;
+        await ctx.post(`ERR: ${index}: Insufficient stack.\n${lines}`);
 
         return;
       }
 
       case 'NaN': {
-        const [_type, index] = result;
-        await ctx.post(`ERR: ${index}: Encountered NaN.`);
+        const [_type, index, lines] = result;
+        await ctx.post(`ERR: ${index}: Encountered NaN.\n${lines}`);
 
         return;
       }
 
       case 'Infinity': {
-        const [_type, index] = result;
-        await ctx.post(`ERR: ${index}: Encountered Infinity.`);
+        const [_type, index, lines] = result;
+        await ctx.post(`ERR: ${index}: Encountered Infinity.\n${lines}`);
 
         return;
       }

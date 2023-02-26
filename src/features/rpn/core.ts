@@ -3,10 +3,17 @@ class EvalError extends Error {
 
   index: number;
 
-  constructor(kind: 'Bottom' | 'NaN' | 'Infinity', index: number) {
+  lines: string;
+
+  constructor(
+    kind: 'Bottom' | 'NaN' | 'Infinity',
+    index: number,
+    buffer: string[]
+  ) {
     super();
     this.kind = kind;
     this.index = index;
+    this.lines = buffer.join('\n');
   }
 }
 
@@ -16,11 +23,11 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
   const push = (line: number, value: number) => {
     if (Number.isNaN(value)) {
-      throw new EvalError('NaN', line);
+      throw new EvalError('NaN', line, buffer);
     }
 
     if (!Number.isFinite(value)) {
-      throw new EvalError('Infinity', line);
+      throw new EvalError('Infinity', line, buffer);
     }
 
     stack.push(value);
@@ -29,7 +36,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
   const pop = (line: number) => {
     const value = stack.pop();
     if (value === undefined) {
-      throw new EvalError('Bottom', line);
+      throw new EvalError('Bottom', line, buffer);
     }
     return value;
   };
@@ -144,7 +151,7 @@ export const evaluate = (tokens: ReadonlyArray<string>) => {
       throw e;
     }
 
-    return [e.kind, e.index] as const;
+    return [e.kind, e.index, e.lines] as const;
   }
 };
 
