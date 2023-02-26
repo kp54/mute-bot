@@ -1,4 +1,4 @@
-import { Client } from 'discord.js';
+import { ChannelType, Client } from 'discord.js';
 import { connectStorage } from '../memory.js';
 import { CreateClientOptions, Memory, SetupContext } from '../types.js';
 
@@ -15,6 +15,10 @@ export const createSetupContext = (
 
     if (!channel.isTextBased()) {
       throw new Error(`${channelId}: the channel is not text-based.`);
+    }
+
+    if (channel.type === ChannelType.GuildStageVoice) {
+      throw new Error(`${channelId}: stage channels are not supported.`);
     }
 
     await channel.send(message);

@@ -1,30 +1,39 @@
-import { ChannelType, Message } from 'discord.js';
+import {
+  ChannelType,
+  Message,
+  PublicThreadChannel,
+  TextChannel,
+} from 'discord.js';
 import {
   ChannelCommandContext,
   CommandContext,
   ThreadCommandContext,
 } from '../types.js';
 
-const createThreadCommandContext = (message: Message): ThreadCommandContext => {
+const createThreadCommandContext = (
+  message: Message,
+  channel: PublicThreadChannel
+): ThreadCommandContext => {
   const author = {
     id: message.author.id,
     username: message.author.username,
   };
 
   const post = async (text: string) => {
-    await message.channel.send(text);
+    await channel.send(text);
   };
 
   return {
     type: 'THREAD',
-    threadId: message.channel.id,
+    threadId: channel.id,
     author,
     post,
   };
 };
 
 const createChannelCommandContext = (
-  message: Message
+  message: Message,
+  channel: TextChannel
 ): ChannelCommandContext => {
   const author = {
     id: message.author.id,
@@ -36,7 +45,7 @@ const createChannelCommandContext = (
   };
 
   const post = async (text: string) => {
-    await message.channel.send(text);
+    await channel.send(text);
   };
 
   const threadify = async (name: string): Promise<ThreadCommandContext> => {
@@ -68,11 +77,13 @@ export const createCommandContext = (
   message: Message
 ): CommandContext | null => {
   if (message.channel.type === ChannelType.GuildText) {
-    return createChannelCommandContext(message);
+    const { channel } = message;
+    return createChannelCommandContext(message, channel);
   }
 
   if (message.channel.type === ChannelType.PublicThread) {
-    return createThreadCommandContext(message);
+    const { channel } = message;
+    return createThreadCommandContext(message, channel);
   }
 
   return null;
