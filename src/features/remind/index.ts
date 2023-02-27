@@ -24,6 +24,9 @@ const formatDue = (timezone: string, unixtime: number) =>
     .setLocale('ja-JP')
     .toLocaleString(DateTime.DATETIME_FULL);
 
+const sanitize = (line: string) =>
+  line.replaceAll('```', '`').replaceAll('\n', ' ');
+
 export default defineFeature(({ config, requestMemory, post }) => {
   const memory = requestMemory<Reminder>(
     '5a834c35-7c00-43c6-9d79-5ae7aef9f755'
@@ -99,10 +102,20 @@ export default defineFeature(({ config, requestMemory, post }) => {
         case 'List': {
           const lines = (await byAuthor(ctx.author.id)).map(
             ([_key, reminder], i) =>
-              `${i}: ${formatDue(config.remind.timezone, reminder.dueAt)}: ${
-                reminder.message
-              }`
+              [
+                i.toString(),
+                formatDue(config.remind.timezone, reminder.dueAt),
+                sanitize(reminder.message),
+              ].join(': ')
           );
+
+          if (lines.length === 0) {
+            await ctx.reply(
+              ['```', 'リマインダーがありません', '```'].join('\n')
+            );
+
+            return;
+          }
 
           await ctx.reply(['```', ...lines, '```'].join('\n'));
 
