@@ -24,9 +24,9 @@ export const createSetupContext = (
     await channel.send(message);
   };
 
-  const requestMemory = <T>(id: string) => {
-    const storage = connectStorage();
+  const storage = connectStorage();
 
+  const requestMemory = <T>(id: string) => {
     const methods: Memory<T> = {
       get: async (key) => {
         const memory = await storage.get(id);
@@ -44,9 +44,7 @@ export const createSetupContext = (
       },
       entries: async () => {
         const memory = await storage.get(id);
-        return Object.entries(memory).filter(
-          (item): item is [string, T] => item !== undefined
-        );
+        return Object.entries(memory);
       },
     };
 
