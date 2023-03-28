@@ -4,13 +4,12 @@ const PATH = './memory.json';
 const TMPPATH = `${PATH}.tmp` as const;
 const INTERVAL = 100;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Entry = Record<string, any>;
-type Container = Record<string, Entry | undefined>;
+type Entry<T> = Record<string, T>;
+type Container = Record<string, Entry<unknown> | undefined>;
 
 type Storage = {
-  get: (key: string) => Promise<Entry>;
-  set: (key: string, value: Entry) => Promise<void>;
+  get: <T>(key: string) => Promise<Entry<T>>;
+  set: <T>(key: string, value: Entry<T>) => Promise<void>;
 };
 
 const loadContainer = (): Container => {
@@ -53,10 +52,10 @@ export const connectStorage = (): Storage => {
     setTimeout(loop, INTERVAL);
   }, INTERVAL);
 
-  const get = async (key: string): Promise<Entry> =>
+  const get = async <T>(key: string): Promise<Entry<T>> =>
     container[key] ?? Object.create(null);
 
-  const set = async (key: string, value: Entry): Promise<void> => {
+  const set = async <T>(key: string, value: Entry<T>): Promise<void> => {
     container[key] = value;
     state.isDirty = true;
   };
