@@ -111,6 +111,24 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
         return;
       }
 
+      case '<':
+      case 'rol': {
+        const x = stack.shift();
+        if (x !== undefined) {
+          stack.push(x);
+        }
+        return;
+      }
+
+      case '>':
+      case 'ror': {
+        const x = stack.pop();
+        if (x !== undefined) {
+          stack.unshift(x);
+        }
+        return;
+      }
+
       case '=':
       case 'print': {
         const x = pop(i);
