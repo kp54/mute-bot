@@ -1,41 +1,43 @@
-export const parseCommand = (line: string): ReadonlyArray<string> | null => {
-  let quoting: 'SINGLE' | 'DOUBLE' | null = null;
-  let escaping = false;
-  let seeking = true;
+export const parseCommand = (line: string): ReadonlyArray<string> => {
+  let withinQuote: 'SINGLE' | 'DOUBLE' | 'NONE' = 'NONE';
+  let hasLeadingBackslash = false;
+  let isInterWord = true;
 
   const result: string[] = [];
   const buffer: string[] = [];
 
+  const whitespaces = /\s/;
+
   [...line, '\n'].forEach((char) => {
-    if (/\s/.test(char)) {
-      if (seeking) {
+    if (whitespaces.test(char)) {
+      if (isInterWord) {
         return;
       }
 
-      if (quoting === null) {
+      if (withinQuote === 'NONE') {
         const part = buffer.join('');
         buffer.splice(0);
-        seeking = true;
+        isInterWord = true;
         result.push(part);
         return;
       }
     }
 
-    seeking = false;
+    isInterWord = false;
 
-    if (escaping) {
+    if (hasLeadingBackslash) {
       buffer.push(char);
-      escaping = false;
+      hasLeadingBackslash = false;
       return;
     }
 
     if (char === `'`) {
-      switch (quoting) {
-        case null:
-          quoting = 'SINGLE';
+      switch (withinQuote) {
+        case 'NONE':
+          withinQuote = 'SINGLE';
           return;
         case 'SINGLE':
-          quoting = null;
+          withinQuote = 'NONE';
           return;
         case 'DOUBLE':
           buffer.push(`'`);
@@ -46,15 +48,15 @@ export const parseCommand = (line: string): ReadonlyArray<string> | null => {
     }
 
     if (char === `"`) {
-      switch (quoting) {
-        case null:
-          quoting = 'DOUBLE';
+      switch (withinQuote) {
+        case 'NONE':
+          withinQuote = 'DOUBLE';
           return;
         case 'SINGLE':
           buffer.push(`"`);
           return;
         case 'DOUBLE':
-          quoting = null;
+          withinQuote = 'NONE';
           return;
         default:
           throw new Error();
@@ -62,15 +64,16 @@ export const parseCommand = (line: string): ReadonlyArray<string> | null => {
     }
 
     if (char === `\\`) {
-      escaping = true;
+      hasLeadingBackslash = true;
       return;
     }
 
     buffer.push(char);
   });
 
-  if (quoting !== null || escaping) {
-    return null;
+  if (withinQuote !== 'NONE' || hasLeadingBackslash) {
+    // fallback to simple split
+    return line.split(whitespaces);
   }
 
   return result;

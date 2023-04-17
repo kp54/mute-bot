@@ -10,6 +10,7 @@ const cases: [string, readonly string[]][] = [
   [`' '`, [' ']],
   [`''`, ['']],
   [`'  '  "  "  '  '`, ['  ', '  ', '  ']],
+  [`who's who`, [`who's`, 'who']],
 ];
 
 const zip = <T, U>(

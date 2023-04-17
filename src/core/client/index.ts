@@ -33,11 +33,6 @@ export const createClient = (options: CreateClientOptions) => {
 
     const argv = parseCommand(message.content);
 
-    if (argv === null) {
-      await message.reply('パースエラー');
-      return;
-    }
-
     if (argv.length === 0) {
       return;
     }
