@@ -16,9 +16,16 @@ export const createClient = (options: CreateClientOptions) => {
   const setupCtx = createSetupContext(client, options);
   const features = (options.features ?? []).map((feat) => feat(setupCtx));
 
-  client.on(Events.ClientReady, () => {
+  client.on(Events.ClientReady, async () => {
     // eslint-disable-next-line no-console
-    console.log(`Logged in as ${client.user?.tag}!`);
+    const { log } = console;
+
+    const guilds = await client.guilds.fetch();
+
+    log(`Logged in as ${client.user?.tag}`);
+
+    log('serving for:');
+    guilds.forEach((x) => log(`- [${x.id}]: ${x.name}`));
   });
 
   client.on(Events.MessageCreate, async (message) => {
