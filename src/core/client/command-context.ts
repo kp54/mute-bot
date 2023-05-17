@@ -23,11 +23,16 @@ const createThreadCommandContext = (
     await channel.send(text);
   };
 
+  const archive = async () => {
+    await channel.setArchived(true);
+  };
+
   return {
     type: 'THREAD',
     threadId: channel.id,
     author,
     post,
+    archive,
   };
 };
 
@@ -55,11 +60,16 @@ const createChannelCommandContext = (
       await thread.send(text);
     };
 
+    const archive = async () => {
+      await thread.setArchived(true);
+    };
+
     return {
       type: 'THREAD',
       threadId: thread.id,
       author,
       post: postThread,
+      archive,
     };
   };
 

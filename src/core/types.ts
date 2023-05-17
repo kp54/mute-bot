@@ -18,6 +18,7 @@ export type ThreadCommandContext = {
     username: string;
   };
   post: (message: string) => Promise<void>;
+  archive: () => Promise<void>;
 };
 
 export type CommandContext = ChannelCommandContext | ThreadCommandContext;
