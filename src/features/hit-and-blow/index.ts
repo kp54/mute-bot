@@ -42,27 +42,24 @@ const validate = (attempt: string) => {
 };
 
 const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
-  if (ctx.type === 'THREAD') {
-    if ((await games.get(ctx.threadId)) !== undefined) {
-      await games.delete(ctx.threadId);
-      await ctx.post('ゲームを破棄しました');
-      return;
-    }
+  if (ctx.type === 'CHANNEL') {
+    const threadCtx = await ctx.threadify(genName());
 
-    await games.set(ctx.threadId, newGame());
-    await ctx.post(
+    await games.set(threadCtx.threadId, newGame());
+    await threadCtx.post(
       ['** hit and blow **', '4桁の10進数を入力してください'].join('\n')
     );
 
     return;
   }
 
-  const threadCtx = await ctx.threadify(genName());
+  if ((await games.get(ctx.threadId)) === undefined) {
+    return;
+  }
 
-  await games.set(threadCtx.threadId, newGame());
-  await threadCtx.post(
-    ['** hit and blow **', '4桁の10進数を入力してください'].join('\n')
-  );
+  await games.delete(ctx.threadId);
+  await ctx.post('ゲームを破棄しました');
+  await ctx.archive();
 };
 
 const handleAttempt = async (
@@ -102,6 +99,7 @@ const handleAttempt = async (
   if (result.hit === DIGITS) {
     await ctx.post(['正解', `試行回数: ${game.attempts}`].join('\n'));
     await games.delete(ctx.threadId);
+    await ctx.archive();
     return;
   }
 
