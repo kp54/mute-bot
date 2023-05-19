@@ -47,18 +47,22 @@ const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
 
     await games.set(threadCtx.threadId, newGame());
     await threadCtx.post(
-      ['** hit and blow **', '4桁の10進数を入力してください'].join('\n')
+      ['** hit and blow **', `${DIGITS}桁の10進数を入力してください`].join('\n')
     );
 
     return;
   }
 
-  if ((await games.get(ctx.threadId)) === undefined) {
+  const game = await games.get(ctx.threadId);
+  if (game === undefined) {
+    await ctx.archive();
     return;
   }
 
   await games.delete(ctx.threadId);
-  await ctx.post('ゲームを破棄しました');
+  await ctx.post(
+    ['ゲームを破棄しました', `正解: ${game.answer.join('')}`].join('\n')
+  );
   await ctx.archive();
 };
 
