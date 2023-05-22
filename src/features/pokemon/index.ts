@@ -25,7 +25,7 @@ const post = async (
 
 export default defineFeature(({ config }) => ({
   matcher: new RegExp(`^${config.core.prefix}pt$`),
-  onCommand: async (ctx, _match, _args) => {
+  onCommand: async (ctx) => {
     if (ctx.type !== 'CHANNEL') {
       return;
     }

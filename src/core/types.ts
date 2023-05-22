@@ -28,7 +28,7 @@ export type Feature = {
   onCommand: (
     ctx: CommandContext,
     match: RegExpMatchArray,
-    args: string[]
+    argv: string[]
   ) => Promise<void>;
 };
 

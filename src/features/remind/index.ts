@@ -71,7 +71,9 @@ export default defineFeature(({ config, requestMemory, post }) => {
 
   return {
     matcher: new RegExp(`^${prefix}remind$`),
-    onCommand: async (ctx, _match, args) => {
+    onCommand: async (ctx, _match, argv) => {
+      const [, ...args] = argv;
+
       if (ctx.type !== 'CHANNEL') {
         return;
       }

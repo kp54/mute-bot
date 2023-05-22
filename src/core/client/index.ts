@@ -44,7 +44,7 @@ export const createClient = (options: CreateClientOptions) => {
       return;
     }
 
-    const [head, ...rest] = argv;
+    const [head] = argv;
 
     await Promise.all(
       features.map((feat) => {
@@ -54,7 +54,7 @@ export const createClient = (options: CreateClientOptions) => {
           return null;
         }
 
-        return feat.onCommand(ctx, match, rest);
+        return feat.onCommand(ctx, match, [...argv]);
       })
     );
   });
