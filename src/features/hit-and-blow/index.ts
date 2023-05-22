@@ -55,6 +55,8 @@ const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
 
   const game = await games.get(ctx.threadId);
   if (game === undefined) {
+    // post before archiving to avoid reopening the thread
+    await ctx.post('スレッドをアーカイブしました');
     await ctx.archive();
     return;
   }
@@ -63,7 +65,6 @@ const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
   await ctx.post(
     ['ゲームを破棄しました', `正解: ${game.answer.join('')}`].join('\n')
   );
-  await ctx.archive();
 };
 
 const handleAttempt = async (
@@ -103,7 +104,6 @@ const handleAttempt = async (
   if (result.hit === DIGITS) {
     await ctx.post(['正解', `試行回数: ${game.attempts}`].join('\n'));
     await games.delete(ctx.threadId);
-    await ctx.archive();
     return;
   }
 
