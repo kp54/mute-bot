@@ -94,6 +94,26 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
         return;
       }
 
+      case '^':
+      case 'pow': {
+        const y = pop(i);
+        const x = pop(i);
+
+        push(i, Math.pow(x, y));
+
+        return;
+      }
+
+      case '~':
+      case 'log': {
+        const y = pop(i);
+        const x = pop(i);
+
+        push(i, Math.log(x) / Math.log(y));
+
+        return;
+      }
+
       case '_':
       case 'drop': {
         pop(i);
