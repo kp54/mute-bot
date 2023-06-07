@@ -99,7 +99,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
         const y = pop(i);
         const x = pop(i);
 
-        push(i, Math.pow(x, y));
+        push(i, x ** y);
 
         return;
       }
