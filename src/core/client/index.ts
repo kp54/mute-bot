@@ -1,5 +1,5 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
-import { CreateClientOptions } from '../types.js';
+import { CommandBody, CreateClientOptions } from '../types.js';
 import { createCommandContext } from './command-context.js';
 import { parseCommand } from './parse-command.js';
 import { createSetupContext } from './setup-context.js';
@@ -38,13 +38,14 @@ export const createClient = (options: CreateClientOptions) => {
       return;
     }
 
-    const argv = parseCommand(message.content);
+    const line = message.content.trim();
+    const argv = parseCommand(line);
 
     if (argv.length === 0) {
       return;
     }
 
-    const [head] = argv;
+    const [head, ...rest] = argv;
 
     await Promise.all(
       features.map((feat) => {
@@ -54,7 +55,16 @@ export const createClient = (options: CreateClientOptions) => {
           return null;
         }
 
-        return feat.onCommand(ctx, match, [...argv]);
+        const content = line.slice(match[0].length).trim();
+
+        const command: CommandBody = {
+          match,
+          args: rest,
+          content,
+          line,
+        };
+
+        return feat.onCommand(ctx, command);
       })
     );
   });

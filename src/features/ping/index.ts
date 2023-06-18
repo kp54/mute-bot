@@ -14,12 +14,12 @@ const keys = Array.from(pingPong)
 export default defineFeature(({ config }) => ({
   matcher: new RegExp(`^${config.core.prefix}(${keys})$`),
 
-  onCommand: async (ctx, match) => {
+  onCommand: async (ctx, command) => {
     if (ctx.type !== 'CHANNEL') {
       return;
     }
 
-    const ping = match[0].slice(config.core.prefix.length);
+    const ping = command.match[0].slice(config.core.prefix.length);
     const pong = pingPong.get(ping);
     if (pong === undefined) {
       return;

@@ -7,12 +7,12 @@ const low = ['ろー', 'ロー', 'low'];
 export default defineFeature(() => ({
   matcher: /^.*$/,
 
-  onCommand: async (ctx, match) => {
+  onCommand: async (ctx, command) => {
     if (ctx.type !== 'CHANNEL') {
       return;
     }
 
-    const line = match[0].toLowerCase();
+    const line = command.match[0].toLowerCase();
 
     if (high.includes(line)) {
       await ctx.post('はいではない');

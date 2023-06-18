@@ -118,13 +118,13 @@ export default defineFeature(({ config, requestMemory }) => {
     matcher: new RegExp(
       `(?<init>^${config.core.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`
     ),
-    onCommand: async (ctx, match) => {
-      if (match.groups?.init !== undefined) {
+    onCommand: async (ctx, command) => {
+      if (command.match.groups?.init !== undefined) {
         await handleInit(ctx, games);
         return;
       }
 
-      const attempt = match.groups?.attempt;
+      const attempt = command.match.groups?.attempt;
       if (attempt !== undefined) {
         await handleAttempt(ctx, games, attempt);
       }

@@ -22,14 +22,16 @@ export type ThreadCommandContext = {
 };
 
 export type CommandContext = ChannelCommandContext | ThreadCommandContext;
+export type CommandBody = {
+  match: RegExpMatchArray;
+  args: string[];
+  content: string;
+  line: string;
+};
 
 export type Feature = {
   matcher: RegExp;
-  onCommand: (
-    ctx: CommandContext,
-    match: RegExpMatchArray,
-    argv: string[]
-  ) => Promise<void>;
+  onCommand: (ctx: CommandContext, command: CommandBody) => Promise<void>;
 };
 
 export type Memory<T> = {

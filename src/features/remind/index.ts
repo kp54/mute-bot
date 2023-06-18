@@ -71,14 +71,12 @@ export default defineFeature(({ config, requestMemory, post }) => {
 
   return {
     matcher: new RegExp(`^${prefix}remind$`),
-    onCommand: async (ctx, _match, argv) => {
-      const [, ...args] = argv;
-
+    onCommand: async (ctx, command) => {
       if (ctx.type !== 'CHANNEL') {
         return;
       }
 
-      const parsed = parse(config.remind.timezone, args);
+      const parsed = parse(config.remind.timezone, command.args);
 
       switch (parsed[0]) {
         case 'Add': {

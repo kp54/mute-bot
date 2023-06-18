@@ -48,9 +48,8 @@ $ stack
 
 export default defineFeature(({ config }) => ({
   matcher: new RegExp(`${config.core.prefix}rpn`),
-  onCommand: async (ctx, _match, argv) => {
-    const [, ...args] = argv;
-    const result = evaluate(args);
+  onCommand: async (ctx, command) => {
+    const result = evaluate(command.args);
 
     switch (result[0]) {
       case 'Ok': {

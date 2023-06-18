@@ -7,20 +7,16 @@ export default defineFeature((setupCtx) => {
   );
 
   return {
-    matcher: /^./,
-    onCommand: async (ctx, _match, argv) => {
+    matcher: new RegExp(`(?<toggle>^${prefix}auto-thread$)|(^.)`),
+    onCommand: async (ctx, command) => {
       if (ctx.type !== 'CHANNEL') {
         return;
       }
 
-      if (argv.length === 0) {
-        return;
-      }
-
+      const isToggle = command.match.groups?.toggle !== undefined;
       const isEnabled = (await memory.get(ctx.channelId)) ?? false;
 
-      const [head, ..._tail] = argv;
-      if (head === `${prefix}auto-thread`) {
+      if (isToggle) {
         if (isEnabled) {
           await memory.delete(ctx.channelId);
           await ctx.post('自動スレッドを無効にしました');
@@ -32,7 +28,7 @@ export default defineFeature((setupCtx) => {
       }
 
       if (isEnabled) {
-        await ctx.threadify(argv.join(' '));
+        await ctx.threadify(command.line);
       }
     },
   };
