@@ -1,5 +1,6 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { CommandBody, CreateClientOptions } from '../types.js';
+import help from './builtins/help.js';
 import { createCommandContext } from './command-context.js';
 import { parseCommand } from './parse-command.js';
 import { createSetupContext } from './setup-context.js';
@@ -15,6 +16,8 @@ export const createClient = (options: CreateClientOptions) => {
 
   const setupCtx = createSetupContext(client, options);
   const features = (options.features ?? []).map((feat) => feat(setupCtx));
+
+  help(options, client, features);
 
   client.on(Events.ClientReady, async () => {
     // eslint-disable-next-line no-console
