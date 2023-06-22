@@ -117,7 +117,7 @@ export default defineFeature(({ config, requestMemory }) => {
   return {
     name: 'hit-and-blow',
 
-    summary: 'ミニゲーム',
+    summary: `(${config.core.prefix}hb) ヒットアンドブロー`,
 
     matcher: new RegExp(
       `(?<init>^${config.core.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`

@@ -26,7 +26,7 @@ const post = async (
 export default defineFeature(({ config }) => ({
   name: 'pokemon',
 
-  summary: 'ポケモン耐性クイズ',
+  summary: `(${config.core.prefix}pt) ポケモン耐性クイズ`,
 
   matcher: new RegExp(`^${config.core.prefix}pt$`),
 
