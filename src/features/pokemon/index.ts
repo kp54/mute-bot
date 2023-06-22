@@ -24,7 +24,12 @@ const post = async (
 };
 
 export default defineFeature(({ config }) => ({
+  name: 'pokemon',
+
+  summary: 'ポケモン耐性クイズ',
+
   matcher: new RegExp(`^${config.core.prefix}pt$`),
+
   onCommand: async (ctx) => {
     if (ctx.type !== 'CHANNEL') {
       return;

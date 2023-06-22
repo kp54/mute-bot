@@ -7,7 +7,12 @@ export default defineFeature((setupCtx) => {
   );
 
   return {
+    name: 'auto-thread',
+
+    summary: '自動スレッド化',
+
     matcher: new RegExp(`(?<toggle>^${prefix}auto-thread$)|(^.)`),
+
     onCommand: async (ctx, command) => {
       if (ctx.type !== 'CHANNEL') {
         return;

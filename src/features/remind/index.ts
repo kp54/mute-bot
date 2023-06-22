@@ -27,6 +27,28 @@ const formatDue = (timezone: string, unixtime: number) =>
 const sanitize = (line: string) =>
   line.replaceAll('```', '`').replaceAll('\n', ' ');
 
+const usage = (prefix: string) =>
+  [
+    '```',
+    '使い方',
+    '',
+    `${prefix}remind after <minute> <content>`,
+    ' リマインダーを <minute> 分後に設定',
+    '',
+    `${prefix}remind at <datetime> <content>`,
+    '  リマインダーを <datetime> に設定',
+    '',
+    `${prefix}remind list`,
+    '  リマインダーの一覧を表示',
+    '',
+    `${prefix}remind delete <index>`,
+    '  リマインダーを削除',
+    '',
+    `${prefix}remind [help]`,
+    '  このガイドを表示',
+    '```',
+  ].join('\n');
+
 export default defineFeature(({ config, requestMemory, post }) => {
   const memory = requestMemory<Reminder>(
     '5a834c35-7c00-43c6-9d79-5ae7aef9f755'
@@ -70,7 +92,14 @@ export default defineFeature(({ config, requestMemory, post }) => {
   const { prefix } = config.core;
 
   return {
+    name: 'remind',
+
+    summary: 'リマインダー',
+
+    usage: usage(prefix),
+
     matcher: new RegExp(`^${prefix}remind$`),
+
     onCommand: async (ctx, command) => {
       if (ctx.type !== 'CHANNEL') {
         return;
@@ -138,28 +167,7 @@ export default defineFeature(({ config, requestMemory, post }) => {
         }
 
         case 'Usage':
-          await ctx.reply(
-            [
-              '```',
-              '使い方',
-              '',
-              `${prefix}remind after <minute> <content>`,
-              ' リマインダーを <minute> 分後に設定',
-              '',
-              `${prefix}remind at <datetime> <content>`,
-              '  リマインダーを <datetime> に設定',
-              '',
-              `${prefix}remind list`,
-              '  リマインダーの一覧を表示',
-              '',
-              `${prefix}remind delete <index>`,
-              '  リマインダーを削除',
-              '',
-              `${prefix}remind [help]`,
-              '  このガイドを表示',
-              '```',
-            ].join('\n')
-          );
+          await ctx.reply(usage(prefix));
 
           return;
 

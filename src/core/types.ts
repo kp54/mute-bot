@@ -30,6 +30,9 @@ export type CommandBody = {
 };
 
 export type Feature = {
+  name: string;
+  summary: string;
+  usage: string | null;
   matcher: RegExp;
   onCommand: (ctx: CommandContext, command: CommandBody) => Promise<void>;
 };

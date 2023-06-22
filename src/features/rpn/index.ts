@@ -47,7 +47,14 @@ $ stack
 `.slice(1, -1);
 
 export default defineFeature(({ config }) => ({
+  name: 'rpn',
+
+  summary: 'スタックベースの計算器',
+
+  usage,
+
   matcher: new RegExp(`${config.core.prefix}rpn`),
+
   onCommand: async (ctx, command) => {
     const result = evaluate(command.args);
 
