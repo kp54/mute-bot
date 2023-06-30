@@ -1,6 +1,6 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
-import { CommandBody, CreateClientOptions } from '../types.js';
-import help from './builtins/help.js';
+import { CreateClientOptions, Feature } from '../types.js';
+import { createCommandBody } from './command-body.js';
 import { createCommandContext } from './command-context.js';
 import { parseCommand } from './parse-command.js';
 import { createSetupContext } from './setup-context.js';
@@ -14,10 +14,7 @@ export const createClient = (options: CreateClientOptions) => {
       GatewayIntentBits.MessageContent,
   });
 
-  const setupCtx = createSetupContext(client, options);
-  const features = (options.features ?? []).map((feat) => feat(setupCtx));
-
-  help(options, client, features);
+  const guildFeatures = new Map<string, Feature[]>();
 
   client.on(Events.ClientReady, async () => {
     // eslint-disable-next-line no-console
@@ -29,12 +26,26 @@ export const createClient = (options: CreateClientOptions) => {
 
     log('serving for:');
     guilds.forEach((x) => log(`- [${x.id}]: ${x.name}`));
+
+    guilds.forEach((guild) => {
+      const setupCtx = createSetupContext(guild.id, client, options);
+      guildFeatures.set(
+        guild.id,
+        (options.features ?? []).map((feat) => feat(setupCtx))
+      );
+    });
   });
 
   client.on(Events.MessageCreate, async (message) => {
     if (message.author.id === client.user?.id) {
       return;
     }
+
+    if (message.guildId === null) {
+      return;
+    }
+
+    const features = guildFeatures.get(message.guildId) ?? [];
 
     const ctx = createCommandContext(message);
     if (ctx === null) {
@@ -48,26 +59,14 @@ export const createClient = (options: CreateClientOptions) => {
       return;
     }
 
-    const [head, ...rest] = argv;
-
     await Promise.all(
       features.map((feat) => {
-        const match = head.match(feat.matcher);
-
-        if (match === null) {
+        const body = createCommandBody(feat.matcher, line, argv);
+        if (body === null) {
           return null;
         }
 
-        const content = line.slice(match[0].length).trim();
-
-        const command: CommandBody = {
-          match,
-          args: rest,
-          content,
-          line,
-        };
-
-        return feat.onCommand(ctx, command);
+        return feat.onCommand(ctx, body);
       })
     );
   });

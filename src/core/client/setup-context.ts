@@ -3,6 +3,7 @@ import { connectStorage } from '../memory.js';
 import { CreateClientOptions, Memory, SetupContext } from '../types.js';
 
 export const createSetupContext = (
+  guildId: string,
   client: Client,
   options: CreateClientOptions
 ): SetupContext => {
