@@ -1,61 +1,45 @@
-import { Client, Events } from 'discord.js';
-import { CreateClientOptions, Feature } from '../../types.js';
-import { parseCommand } from '../parse-command.js';
+import { Message } from 'discord.js';
+import { Config, Feature } from '../../types.js';
 
-export const setupHelp = (
-  options: CreateClientOptions,
-  client: Client,
-  guildFeatures: Map<string, Feature[]>
-) => {
-  const { prefix } = options.config.core;
+export const handleHelp = async (
+  config: Config,
+  features: readonly Feature[],
+  argv: readonly string[],
+  message: Message<boolean>
+): Promise<boolean> => {
+  const usage = async () => {
+    const lines = [
+      '```',
+      ...features.map((x) => `${x.name} : ${x.summary}`),
+      '```',
+    ].join('\n');
 
-  client.on(Events.MessageCreate, async (message) => {
-    if (message.author.id === client.user?.id) {
-      return;
-    }
+    await message.reply(lines);
+  };
 
-    if (message.guildId === null) {
-      return;
-    }
+  if (argv[0] !== `${config.core.prefix}help`) {
+    return false;
+  }
 
-    const features = guildFeatures.get(message.guildId) ?? [];
+  if (argv.length === 1) {
+    await usage();
+    return true;
+  }
 
-    const usage = async () => {
-      const lines = [
-        '```',
-        ...features.map((x) => `${x.name} : ${x.summary}`),
-        '```',
-      ].join('\n');
+  const name = argv[1];
+  const feat = features.find((x) => x.name === name);
+  if (feat === undefined) {
+    await usage();
+    return true;
+  }
 
-      await message.reply(lines);
-    };
+  if (feat.usage === null) {
+    await message.reply('ヘルプは利用できません');
+    return true;
+  }
 
-    const line = message.content.trim();
-    const argv = parseCommand(line);
-
-    if (argv[0] !== `${prefix}help`) {
-      return;
-    }
-
-    if (argv.length === 1) {
-      await usage();
-      return;
-    }
-
-    const name = argv[1];
-    const feat = features.find((x) => x.name === name);
-    if (feat === undefined) {
-      await usage();
-      return;
-    }
-
-    if (feat.usage === null) {
-      await message.reply('ヘルプは利用できません');
-      return;
-    }
-
-    await message.reply(feat.usage);
-  });
+  await message.reply(feat.usage);
+  return true;
 };
 
-export default { setupHelp };
+export default { handleHelp };
