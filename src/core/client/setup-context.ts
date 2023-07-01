@@ -27,26 +27,8 @@ export const createSetupContext = (
 
   const storage = connectStorage();
 
-  const requestMemory = <T>(id: string): Memory<T> => ({
-    get: async (key) => {
-      const memory = await storage.get<T>(id);
-      return memory[key];
-    },
-    set: async (key, value) => {
-      const memory = await storage.get<T>(id);
-      memory[key] = value;
-      await storage.set(id, memory);
-    },
-    delete: async (key) => {
-      const memory = await storage.get<T>(id);
-      delete memory[key];
-      await storage.set(id, memory);
-    },
-    entries: async () => {
-      const memory = await storage.get<T>(id);
-      return Object.entries(memory);
-    },
-  });
+  const requestMemory = <T>(id: string): Memory<T> =>
+    storage.getMemory(guildId, id);
 
   return {
     config: options.config,
