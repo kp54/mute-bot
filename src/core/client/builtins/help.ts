@@ -2,10 +2,10 @@ import { Client, Events } from 'discord.js';
 import { CreateClientOptions, Feature } from '../../types.js';
 import { parseCommand } from '../parse-command.js';
 
-export default (
+export const setupHelp = (
   options: CreateClientOptions,
   client: Client,
-  features: Feature[]
+  guildFeatures: Map<string, Feature[]>
 ) => {
   const { prefix } = options.config.core;
 
@@ -13,6 +13,12 @@ export default (
     if (message.author.id === client.user?.id) {
       return;
     }
+
+    if (message.guildId === null) {
+      return;
+    }
+
+    const features = guildFeatures.get(message.guildId) ?? [];
 
     const usage = async () => {
       const lines = [
@@ -51,3 +57,5 @@ export default (
     await message.reply(feat.usage);
   });
 };
+
+export default { setupHelp };

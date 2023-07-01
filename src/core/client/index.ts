@@ -1,5 +1,6 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { CreateClientOptions, Feature } from '../types.js';
+import { setupHelp } from './builtins/help.js';
 import { createCommandBody } from './command-body.js';
 import { createCommandContext } from './command-context.js';
 import { parseCommand } from './parse-command.js';
@@ -34,6 +35,8 @@ export const createClient = (options: CreateClientOptions) => {
         (options.features ?? []).map((feat) => feat(setupCtx))
       );
     });
+
+    setupHelp(options, client, guildFeatures);
   });
 
   client.on(Events.MessageCreate, async (message) => {
