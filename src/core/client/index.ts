@@ -6,6 +6,16 @@ import { createCommandContext } from './command-context.js';
 import { parseCommand } from './parse-command.js';
 import { createSetupContext } from './setup-context.js';
 
+const formatError = (e: Error): string => {
+  const lines = [`${e.name}: ${e.message}`, e.stack];
+
+  if (e.cause instanceof Error) {
+    lines.push(formatError(e.cause));
+  }
+
+  return lines.join('\n');
+};
+
 export const createClient = (options: CreateClientOptions) => {
   const { config, features: featureBuilders, logger } = options;
 
@@ -64,13 +74,18 @@ export const createClient = (options: CreateClientOptions) => {
     }
 
     await Promise.all(
-      features.map((feat) => {
+      features.map(async (feat) => {
         const body = createCommandBody(feat.matcher, line, argv);
         if (body === null) {
-          return null;
+          return;
         }
 
-        return feat.onCommand(ctx, body);
+        try {
+          await feat.onCommand(ctx, body);
+        } catch (e) {
+          const details = e instanceof Error ? formatError(e) : String(e);
+          logger?.error(`feature \`${feat.name}\` crashed:`, details);
+        }
       }),
     );
   });
