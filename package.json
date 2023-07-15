@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "lint": "prettier --loglevel warn --check src/ && eslint src/** && tsc --noEmit",
-    "lint:fix": "prettier --loglevel warn --write src/ && eslint --fix src/**",
+    "lint": "prettier --check src/ && eslint src/** && tsc --noEmit",
+    "lint-fix": "prettier --write src/ && eslint --fix src/**",
     "serve": "node dist/main.js",
     "test": "tsc && node dist/tests/index.js"
   },
