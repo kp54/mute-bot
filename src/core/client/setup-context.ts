@@ -5,7 +5,7 @@ import { CreateClientOptions, Memory, SetupContext } from '../types.js';
 export const createSetupContext = (
   guildId: string,
   client: Client,
-  options: CreateClientOptions
+  options: CreateClientOptions,
 ): SetupContext => {
   const post = async (channelId: string, message: string) => {
     const channel = client.channels.resolve(channelId);

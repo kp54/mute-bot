@@ -51,7 +51,7 @@ export const connectStorage = () => {
 
   const getUnit = async <T>(
     guildId: string,
-    unitId: string
+    unitId: string,
   ): Promise<Unit<T>> => {
     const container = storage[guildId];
     if (container === undefined) {
@@ -64,7 +64,7 @@ export const connectStorage = () => {
   const setUnit = async <T>(
     guildId: string,
     unitId: string,
-    unit: Unit<T>
+    unit: Unit<T>,
   ): Promise<void> => {
     const container = storage[guildId] ?? {};
 
@@ -92,7 +92,7 @@ export const connectStorage = () => {
     entries: async () => {
       const unit = await getUnit<T>(guildId, unitId);
       return Object.entries(unit).filter(
-        (x): x is [string, T] => x[1] !== undefined
+        (x): x is [string, T] => x[1] !== undefined,
       );
     },
   });

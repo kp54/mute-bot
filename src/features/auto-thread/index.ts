@@ -3,7 +3,7 @@ import { defineFeature } from '../../core/feature.js';
 export default defineFeature((setupCtx) => {
   const { prefix } = setupCtx.config.core;
   const memory = setupCtx.requestMemory<true>(
-    '52c75dc6-480d-4ca0-a3ed-c126912fb056'
+    '52c75dc6-480d-4ca0-a3ed-c126912fb056',
   );
 
   return {

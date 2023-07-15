@@ -15,7 +15,7 @@ const cases: [string, readonly string[]][] = [
 
 const zip = <T, U>(
   xs: ReadonlyArray<T>,
-  ys: ReadonlyArray<U>
+  ys: ReadonlyArray<U>,
 ): Array<[T, U]> => {
   const length = Math.min(xs.length, ys.length);
   return Array(length)
@@ -38,7 +38,7 @@ export const testParseCommand = () => {
           `input: ${JSON.stringify(input)},`,
           `expected: ${JSON.stringify(expected)},`,
           `actual: ${JSON.stringify(actual)}`,
-        ].join(' ')
+        ].join(' '),
       );
     const pass = () =>
       // eslint-disable-next-line no-console
@@ -47,7 +47,7 @@ export const testParseCommand = () => {
           '[PASS]',
           `input: ${JSON.stringify(input)},`,
           `result: ${JSON.stringify(actual)}`,
-        ].join(' ')
+        ].join(' '),
       );
 
     if (actual === null && expected === null) {

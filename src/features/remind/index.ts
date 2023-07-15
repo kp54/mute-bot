@@ -51,7 +51,7 @@ const usage = (prefix: string) =>
 
 export default defineFeature(({ config, requestMemory, post }) => {
   const memory = requestMemory<Reminder>(
-    '5a834c35-7c00-43c6-9d79-5ae7aef9f755'
+    '5a834c35-7c00-43c6-9d79-5ae7aef9f755',
   );
 
   const { interval } = config.remind;
@@ -67,11 +67,11 @@ export default defineFeature(({ config, requestMemory, post }) => {
 
         await post(
           reminder.channelId,
-          `<@!${reminder.authorId}> リマインダー ${reminder.message}`
+          `<@!${reminder.authorId}> リマインダー ${reminder.message}`,
         );
 
         await memory.delete(key);
-      })
+      }),
     );
 
     setTimeout(() => {
@@ -84,7 +84,7 @@ export default defineFeature(({ config, requestMemory, post }) => {
 
   const byAuthor = async (authorId: string) => {
     const reminders = (await memory.entries()).filter(
-      ([_key, reminder]) => reminder.authorId === authorId
+      ([_key, reminder]) => reminder.authorId === authorId,
     );
     return reminders ?? [];
   };
@@ -121,8 +121,8 @@ export default defineFeature(({ config, requestMemory, post }) => {
           await ctx.reply(
             `${formatDue(
               config.remind.timezone,
-              dueAt
-            )} にリマインダーを設定しました`
+              dueAt,
+            )} にリマインダーを設定しました`,
           );
 
           return;
@@ -135,12 +135,12 @@ export default defineFeature(({ config, requestMemory, post }) => {
                 i.toString(),
                 formatDue(config.remind.timezone, reminder.dueAt),
                 sanitize(reminder.message),
-              ].join(': ')
+              ].join(': '),
           );
 
           if (lines.length === 0) {
             await ctx.reply(
-              ['```', 'リマインダーがありません', '```'].join('\n')
+              ['```', 'リマインダーがありません', '```'].join('\n'),
             );
 
             return;
@@ -158,7 +158,7 @@ export default defineFeature(({ config, requestMemory, post }) => {
           const toRemove = reminders.filter((_x, i) => indexes.includes(i));
 
           await Promise.all(
-            toRemove.map(([key, _reminder]) => memory.delete(key))
+            toRemove.map(([key, _reminder]) => memory.delete(key)),
           );
 
           await ctx.reply('リマインダーを削除しました');

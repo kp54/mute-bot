@@ -5,7 +5,7 @@ export const handleHelp = async (
   config: Config,
   features: readonly Feature[],
   argv: readonly string[],
-  message: Message<boolean>
+  message: Message<boolean>,
 ): Promise<boolean> => {
   const usage = async () => {
     const lines = [

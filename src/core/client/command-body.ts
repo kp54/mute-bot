@@ -3,7 +3,7 @@ import { CommandBody } from '../types.js';
 export const createCommandBody = (
   matcher: RegExp,
   line: string,
-  argv: readonly string[]
+  argv: readonly string[],
 ): CommandBody | null => {
   const [head, ...rest] = argv;
 

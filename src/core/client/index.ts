@@ -32,7 +32,7 @@ export const createClient = (options: CreateClientOptions) => {
       const setupCtx = createSetupContext(guild.id, client, options);
       guildFeatures.set(
         guild.id,
-        (options.features ?? []).map((feat) => feat(setupCtx))
+        (options.features ?? []).map((feat) => feat(setupCtx)),
       );
     });
   });
@@ -72,7 +72,7 @@ export const createClient = (options: CreateClientOptions) => {
         }
 
         return feat.onCommand(ctx, body);
-      })
+      }),
     );
   });
 

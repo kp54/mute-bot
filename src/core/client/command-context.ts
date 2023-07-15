@@ -12,7 +12,7 @@ import {
 
 const createThreadCommandContext = (
   message: Message,
-  channel: PublicThreadChannel
+  channel: PublicThreadChannel,
 ): ThreadCommandContext => {
   const author = {
     id: message.author.id,
@@ -38,7 +38,7 @@ const createThreadCommandContext = (
 
 const createChannelCommandContext = (
   message: Message,
-  channel: TextChannel
+  channel: TextChannel,
 ): ChannelCommandContext => {
   const author = {
     id: message.author.id,
@@ -84,7 +84,7 @@ const createChannelCommandContext = (
 };
 
 export const createCommandContext = (
-  message: Message
+  message: Message,
 ): CommandContext | null => {
   if (message.channel.type === ChannelType.GuildText) {
     const { channel } = message;

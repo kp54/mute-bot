@@ -47,7 +47,9 @@ const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
 
     await games.set(threadCtx.threadId, newGame());
     await threadCtx.post(
-      ['** hit and blow **', `${DIGITS}桁の10進数を入力してください`].join('\n')
+      ['** hit and blow **', `${DIGITS}桁の10進数を入力してください`].join(
+        '\n',
+      ),
     );
 
     return;
@@ -63,14 +65,14 @@ const handleInit = async (ctx: CommandContext, games: Memory<Game>) => {
 
   await games.delete(ctx.threadId);
   await ctx.post(
-    ['ゲームを破棄しました', `正解: ${game.answer.join('')}`].join('\n')
+    ['ゲームを破棄しました', `正解: ${game.answer.join('')}`].join('\n'),
   );
 };
 
 const handleAttempt = async (
   ctx: CommandContext,
   games: Memory<Game>,
-  attempt: string
+  attempt: string,
 ) => {
   if (ctx.type !== 'THREAD') {
     return;
@@ -120,7 +122,7 @@ export default defineFeature(({ config, requestMemory }) => {
     summary: `(${config.core.prefix}hb) ヒットアンドブロー`,
 
     matcher: new RegExp(
-      `(?<init>^${config.core.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`
+      `(?<init>^${config.core.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`,
     ),
     onCommand: async (ctx, command) => {
       if (command.match.groups?.init !== undefined) {

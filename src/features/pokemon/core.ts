@@ -56,7 +56,7 @@ export const prettyFormatResistance = (resistance: readonly number[]) => {
 
 export const randomType = (): [PokemonType, PokemonType | null] => {
   const [type1, type2, ..._] = [...pokemonTypes, null].sort(
-    (_a, _b) => Math.random() - 0.5
+    (_a, _b) => Math.random() - 0.5,
   );
 
   if (type1 === null) {

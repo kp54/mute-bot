@@ -23,7 +23,7 @@ const usage = (prefix: string) =>
 export default defineFeature((setupCtx) => {
   const { prefix } = setupCtx.config.core;
   const memory = setupCtx.requestMemory<string>(
-    'd91d7e6d-f5bd-4ce3-b54c-d42aa4e4106e'
+    'd91d7e6d-f5bd-4ce3-b54c-d42aa4e4106e',
   );
 
   return {

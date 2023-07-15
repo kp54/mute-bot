@@ -8,7 +8,7 @@ class EvalError extends Error {
   constructor(
     kind: 'Bottom' | 'NaN' | 'Infinity',
     index: number,
-    buffer: string[]
+    buffer: string[],
   ) {
     super();
     this.kind = kind;

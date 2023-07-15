@@ -10,7 +10,7 @@ import {
 const post = async (
   ctx: ChannelCommandContext,
   resistance: readonly number[],
-  answer: readonly string[]
+  answer: readonly string[],
 ) => {
   const lines = [
     '** ポケモン耐性クイズ **',
