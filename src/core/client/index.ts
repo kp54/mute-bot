@@ -7,6 +7,8 @@ import { parseCommand } from './parse-command.js';
 import { createSetupContext } from './setup-context.js';
 
 export const createClient = (options: CreateClientOptions) => {
+  const { config, features: featureBuilders, logger } = options;
+
   const client = new Client({
     intents:
       // eslint-disable-next-line no-bitwise
@@ -18,21 +20,18 @@ export const createClient = (options: CreateClientOptions) => {
   const guildFeatures = new Map<string, Feature[]>();
 
   client.on(Events.ClientReady, async () => {
-    // eslint-disable-next-line no-console
-    const { log } = console;
-
     const guilds = await client.guilds.fetch();
 
-    log(`Logged in as ${client.user?.tag}`);
+    logger?.log(`Logged in as ${client.user?.tag}`);
 
-    log('serving for:');
-    guilds.forEach((x) => log(`- [${x.id}]: ${x.name}`));
+    logger?.log('serving for:');
+    guilds.forEach((x) => logger?.log(`- [${x.id}]: ${x.name}`));
 
     guilds.forEach((guild) => {
       const setupCtx = createSetupContext(guild.id, client, options);
       guildFeatures.set(
         guild.id,
-        (options.features ?? []).map((feat) => feat(setupCtx)),
+        (featureBuilders ?? []).map((feat) => feat(setupCtx)),
       );
     });
   });
@@ -60,7 +59,7 @@ export const createClient = (options: CreateClientOptions) => {
       return;
     }
 
-    if (await handleHelp(options.config, features, argv, message)) {
+    if (await handleHelp(config, features, argv, message)) {
       return;
     }
 
@@ -77,7 +76,7 @@ export const createClient = (options: CreateClientOptions) => {
   });
 
   const run = async () => {
-    await client.login(options.config.core.discordToken);
+    await client.login(config.core.discordToken);
   };
 
   return {

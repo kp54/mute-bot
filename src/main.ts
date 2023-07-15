@@ -1,5 +1,6 @@
 import config from './config.local.js';
 import { createClient } from './core/client/index.js';
+import { createConsoleLogger } from './core/logger.js';
 import autoThread from './features/auto-thread/index.js';
 import echo from './features/echo/index.js';
 import hitAndBlow from './features/hit-and-blow/index.js';
@@ -21,6 +22,7 @@ const client = createClient({
     autoThread,
     transponder,
   ],
+  logger: createConsoleLogger(),
 });
 
 await client.run();

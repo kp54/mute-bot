@@ -55,6 +55,7 @@ export type FeatureFactory = (options: SetupContext) => Feature;
 export type CreateClientOptions = {
   config: Config;
   features?: FeatureFactory[];
+  logger?: Logger;
 };
 
 export interface Config {
@@ -63,3 +64,8 @@ export interface Config {
     prefix: string;
   };
 }
+
+export type Logger = {
+  log: (...values: string[]) => void;
+  error: (...values: string[]) => void;
+};
