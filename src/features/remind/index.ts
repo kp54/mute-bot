@@ -49,147 +49,147 @@ const usage = (prefix: string) =>
     '```',
   ].join('\n');
 
-export default defineFeature(({ config, requestMemory, post }) => {
-  const memory = requestMemory<Reminder>(
-    '5a834c35-7c00-43c6-9d79-5ae7aef9f755',
-  );
+export default defineFeature(
+  ({ config, requestMemory, requestTimers, post }) => {
+    const memory = requestMemory<Reminder>(
+      '5a834c35-7c00-43c6-9d79-5ae7aef9f755',
+    );
 
-  const { interval } = config.remind;
-  const tick = async (): Promise<void> => {
-    const now = Date.now();
-    const entries = await memory.entries();
+    const timers = requestTimers('remind');
 
-    await Promise.all(
-      entries.map(async ([key, reminder]) => {
-        if (now < reminder.dueAt) {
+    const { interval } = config.remind;
+    const tick = async (): Promise<void> => {
+      const now = Date.now();
+      const entries = await memory.entries();
+
+      await Promise.all(
+        entries.map(async ([key, reminder]) => {
+          if (now < reminder.dueAt) {
+            return;
+          }
+
+          await post(
+            reminder.channelId,
+            `<@!${reminder.authorId}> リマインダー ${reminder.message}`,
+          );
+
+          await memory.delete(key);
+        }),
+      );
+
+      timers.setTimeout(() => tick(), interval);
+    };
+    timers.setTimeout(() => tick(), interval);
+
+    const byAuthor = async (authorId: string) => {
+      const reminders = (await memory.entries()).filter(
+        ([_key, reminder]) => reminder.authorId === authorId,
+      );
+      return reminders ?? [];
+    };
+
+    const { prefix } = config.core;
+
+    return {
+      name: 'remind',
+
+      summary: 'リマインダー',
+
+      usage: usage(prefix),
+
+      matcher: new RegExp(`^${prefix}remind$`),
+
+      onCommand: async (ctx, command) => {
+        if (ctx.type !== 'CHANNEL') {
           return;
         }
 
-        await post(
-          reminder.channelId,
-          `<@!${reminder.authorId}> リマインダー ${reminder.message}`,
-        );
+        const parsed = parse(config.remind.timezone, command.args);
 
-        await memory.delete(key);
-      }),
-    );
+        switch (parsed[0]) {
+          case 'Add': {
+            const [_, dueAt, message] = parsed;
 
-    setTimeout(() => {
-      void tick();
-    }, interval);
-  };
-  setTimeout(() => {
-    void tick();
-  }, interval);
-
-  const byAuthor = async (authorId: string) => {
-    const reminders = (await memory.entries()).filter(
-      ([_key, reminder]) => reminder.authorId === authorId,
-    );
-    return reminders ?? [];
-  };
-
-  const { prefix } = config.core;
-
-  return {
-    name: 'remind',
-
-    summary: 'リマインダー',
-
-    usage: usage(prefix),
-
-    matcher: new RegExp(`^${prefix}remind$`),
-
-    onCommand: async (ctx, command) => {
-      if (ctx.type !== 'CHANNEL') {
-        return;
-      }
-
-      const parsed = parse(config.remind.timezone, command.args);
-
-      switch (parsed[0]) {
-        case 'Add': {
-          const [_, dueAt, message] = parsed;
-
-          await memory.set(Math.random().toString(), {
-            dueAt,
-            channelId: ctx.channelId,
-            authorId: ctx.author.id,
-            message,
-          });
-
-          await ctx.reply(
-            `${formatDue(
-              config.remind.timezone,
+            await memory.set(Math.random().toString(), {
               dueAt,
-            )} にリマインダーを設定しました`,
-          );
+              channelId: ctx.channelId,
+              authorId: ctx.author.id,
+              message,
+            });
 
-          return;
-        }
-
-        case 'List': {
-          const lines = (await byAuthor(ctx.author.id)).map(
-            ([_key, reminder], i) =>
-              [
-                i.toString(),
-                formatDue(config.remind.timezone, reminder.dueAt),
-                sanitize(reminder.message),
-              ].join(': '),
-          );
-
-          if (lines.length === 0) {
             await ctx.reply(
-              ['```', 'リマインダーがありません', '```'].join('\n'),
+              `${formatDue(
+                config.remind.timezone,
+                dueAt,
+              )} にリマインダーを設定しました`,
             );
 
             return;
           }
 
-          await ctx.reply(['```', ...lines, '```'].join('\n'));
+          case 'List': {
+            const lines = (await byAuthor(ctx.author.id)).map(
+              ([_key, reminder], i) =>
+                [
+                  i.toString(),
+                  formatDue(config.remind.timezone, reminder.dueAt),
+                  sanitize(reminder.message),
+                ].join(': '),
+            );
 
-          return;
-        }
+            if (lines.length === 0) {
+              await ctx.reply(
+                ['```', 'リマインダーがありません', '```'].join('\n'),
+              );
 
-        case 'Delete': {
-          const [_, indexes] = parsed;
+              return;
+            }
 
-          const reminders = await byAuthor(ctx.author.id);
-          const toRemove = reminders.filter((_x, i) => indexes.includes(i));
+            await ctx.reply(['```', ...lines, '```'].join('\n'));
 
-          await Promise.all(
-            toRemove.map(([key, _reminder]) => memory.delete(key)),
-          );
+            return;
+          }
 
-          await ctx.reply('リマインダーを削除しました');
+          case 'Delete': {
+            const [_, indexes] = parsed;
 
-          return;
-        }
+            const reminders = await byAuthor(ctx.author.id);
+            const toRemove = reminders.filter((_x, i) => indexes.includes(i));
 
-        case 'Usage':
-          await ctx.reply(usage(prefix));
+            await Promise.all(
+              toRemove.map(([key, _reminder]) => memory.delete(key)),
+            );
 
-          return;
+            await ctx.reply('リマインダーを削除しました');
 
-        case 'Error':
-          // prettier-ignore
-          await ctx.reply(
+            return;
+          }
+
+          case 'Usage':
+            await ctx.reply(usage(prefix));
+
+            return;
+
+          case 'Error':
+            // prettier-ignore
+            await ctx.reply(
             [
               'パースエラー',
               `\`${prefix}remind help\` でガイドを表示します`,
             ].join('\n')
           );
 
-          return;
+            return;
 
-        case 'Past':
-          await ctx.reply('過去の日時は設定できません');
+          case 'Past':
+            await ctx.reply('過去の日時は設定できません');
 
-          return;
+            return;
 
-        default:
-          throw new Error();
-      }
-    },
-  };
-});
+          default:
+            throw new Error();
+        }
+      },
+    };
+  },
+);

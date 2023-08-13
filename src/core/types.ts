@@ -1,3 +1,5 @@
+import { Timers } from './timers.js';
+
 export type ChannelCommandContext = {
   type: 'CHANNEL';
   channelId: string;
@@ -48,6 +50,7 @@ export type SetupContext = {
   config: Config;
   post: (channelId: string, message: string) => Promise<void>;
   requestMemory: <T>(id: string) => Memory<T>;
+  requestTimers: (name: string) => Timers;
 };
 
 export type FeatureFactory = (options: SetupContext) => Feature;

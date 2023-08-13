@@ -1,12 +1,16 @@
 import { ChannelType, Client } from 'discord.js';
 import { connectStorage } from '../memory.js';
+import { Timers, createTimers } from '../timers.js';
 import { CreateClientOptions, Memory, SetupContext } from '../types.js';
+import { formatError } from './format-error.js';
 
 export const createSetupContext = (
   guildId: string,
   client: Client,
   options: CreateClientOptions,
 ): SetupContext => {
+  const { config, logger } = options;
+
   const post = async (channelId: string, message: string) => {
     const channel = client.channels.resolve(channelId);
 
@@ -30,10 +34,17 @@ export const createSetupContext = (
   const requestMemory = <T>(id: string): Memory<T> =>
     storage.getMemory(guildId, id);
 
+  const requestTimers = (name: string): Timers =>
+    createTimers((e) => {
+      const details = e instanceof Error ? formatError(e) : String(e);
+      logger?.error(`feature \`${name}\` crashed:`, details);
+    });
+
   return {
-    config: options.config,
+    config,
     post,
     requestMemory,
+    requestTimers,
   };
 };
 

@@ -3,18 +3,9 @@ import { CreateClientOptions, Feature } from '../types.js';
 import { handleHelp } from './builtins/help.js';
 import { createCommandBody } from './command-body.js';
 import { createCommandContext } from './command-context.js';
+import { formatError } from './format-error.js';
 import { parseCommand } from './parse-command.js';
 import { createSetupContext } from './setup-context.js';
-
-const formatError = (e: Error): string => {
-  const lines = [`${e.name}: ${e.message}`, e.stack];
-
-  if (e.cause instanceof Error) {
-    lines.push(formatError(e.cause));
-  }
-
-  return lines.join('\n');
-};
 
 export const createClient = (options: CreateClientOptions) => {
   const { config, features: featureBuilders, logger } = options;

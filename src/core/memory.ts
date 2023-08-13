@@ -38,14 +38,17 @@ export const connectStorage = () => {
     isDirty: false,
   };
 
+  // eslint-disable-next-line no-restricted-globals
   setTimeout(function loop() {
     if (!state.isDirty) {
+      // eslint-disable-next-line no-restricted-globals
       setTimeout(loop, INTERVAL);
       return;
     }
 
     saveStorage(storage);
     state.isDirty = false;
+    // eslint-disable-next-line no-restricted-globals
     setTimeout(loop, INTERVAL);
   }, INTERVAL);
 

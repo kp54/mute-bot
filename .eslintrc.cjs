@@ -55,11 +55,14 @@ module.exports = {
     ],
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-misused-promises': 'error',
-    'no-void': [
+    'no-restricted-globals': [
       'error',
-      {
-        allowAsStatement: true,
-      },
+      'setTimeout',
+      'clearTimeout',
+      'setInterval',
+      'clearInterval',
+      'setImmediate',
+      'clearImmediate',
     ],
   },
 };
