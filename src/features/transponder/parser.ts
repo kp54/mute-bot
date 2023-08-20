@@ -8,7 +8,7 @@ const Action = {
 
 const t = <T extends ReadonlyArray<unknown>>(...value: T) => value;
 
-const parse = (args: string[]) => {
+export const parse = (args: string[]) => {
   if (args.length === 0) {
     return t(Action.Usage);
   }
@@ -40,5 +40,3 @@ const parse = (args: string[]) => {
       return t(Action.Error);
   }
 };
-
-export default parse;

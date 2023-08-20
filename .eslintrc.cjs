@@ -64,5 +64,6 @@ module.exports = {
       'setImmediate',
       'clearImmediate',
     ],
+    'import/prefer-default-export': 'off',
   },
 };

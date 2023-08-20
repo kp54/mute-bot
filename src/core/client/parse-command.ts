@@ -78,5 +78,3 @@ export const parseCommand = (line: string): ReadonlyArray<string> => {
 
   return result;
 };
-
-export default { parseCommand };

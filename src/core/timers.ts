@@ -47,7 +47,3 @@ export const createTimers = (onError: (e: unknown) => unknown): Timers => ({
     wrapIntervalId(setInterval(wrapFunc(callback, onError), ms)),
   clearInterval: (intervalId) => clearInterval(intervalId.value),
 });
-
-export default {
-  createTimers,
-};

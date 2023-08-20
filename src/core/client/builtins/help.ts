@@ -41,5 +41,3 @@ export const handleHelp = async (
   await message.reply(feat.usage);
   return true;
 };
-
-export default { handleHelp };

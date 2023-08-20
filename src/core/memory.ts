@@ -104,5 +104,3 @@ export const connectStorage = () => {
     getMemory,
   };
 };
-
-export default { connectStorage };

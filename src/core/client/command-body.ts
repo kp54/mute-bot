@@ -21,7 +21,3 @@ export const createCommandBody = (
     line,
   };
 };
-
-export default {
-  createCommandBody,
-};

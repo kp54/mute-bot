@@ -1,5 +1,5 @@
 import { defineFeature } from '../../core/feature.js';
-import parse from './parser.js';
+import { parse } from './parser.js';
 
 const usage = (prefix: string) =>
   [

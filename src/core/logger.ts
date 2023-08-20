@@ -6,7 +6,3 @@ export const createConsoleLogger = (): Logger => ({
   // eslint-disable-next-line no-console
   error: (...values) => console.error(values.join('\n')),
 });
-
-export default {
-  createConsoleLogger,
-};

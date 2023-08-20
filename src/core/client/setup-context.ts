@@ -47,5 +47,3 @@ export const createSetupContext = (
     requestTimers,
   };
 };
-
-export default { createSetupContext };

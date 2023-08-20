@@ -73,5 +73,3 @@ export const testParseCommand = () => {
     pass();
   });
 };
-
-export default { testParseCommand };
