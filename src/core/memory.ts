@@ -31,7 +31,7 @@ const saveStorage = (storage: Storage) => {
   fs.renameSync(TMPPATH, PATH);
 };
 
-export const connectStorage = () => {
+const connectStorageInner = () => {
   const storage = loadStorage();
 
   const state = {
@@ -100,6 +100,15 @@ export const connectStorage = () => {
   return {
     getMemory,
   };
+};
+
+let storage: {
+  getMemory: <T>(guildId: string, unitId: string) => Memory<T>;
+} | null = null;
+
+export const connectStorage = () => {
+  storage ??= connectStorageInner();
+  return storage;
 };
 
 export default { connectStorage };
