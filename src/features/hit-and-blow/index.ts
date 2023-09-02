@@ -113,27 +113,30 @@ const handleAttempt = async (
   await games.set(ctx.threadId, game);
 };
 
-export default defineFeature(({ config, requestMemory }) => {
-  const games = requestMemory<Game>('a0073f1c-0603-43b9-867b-81e54289d6d5');
+export default defineFeature({
+  id: 'a0073f1c-0603-43b9-867b-81e54289d6d5',
+  name: 'hit-and-blow',
+  create: ({ config, requestMemory }) => {
+    const games = requestMemory<Game>();
 
-  return {
-    name: 'hit-and-blow',
+    return {
+      summary: `(${config.core.prefix}hb) ヒットアンドブロー`,
+      usage: null,
+      matcher: new RegExp(
+        `(?<init>^${config.core.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`,
+      ),
 
-    summary: `(${config.core.prefix}hb) ヒットアンドブロー`,
+      onCommand: async (ctx, command) => {
+        if (command.match.groups?.init !== undefined) {
+          await handleInit(ctx, games);
+          return;
+        }
 
-    matcher: new RegExp(
-      `(?<init>^${config.core.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`,
-    ),
-    onCommand: async (ctx, command) => {
-      if (command.match.groups?.init !== undefined) {
-        await handleInit(ctx, games);
-        return;
-      }
-
-      const attempt = command.match.groups?.attempt;
-      if (attempt !== undefined) {
-        await handleAttempt(ctx, games, attempt);
-      }
-    },
-  };
+        const attempt = command.match.groups?.attempt;
+        if (attempt !== undefined) {
+          await handleAttempt(ctx, games, attempt);
+        }
+      },
+    };
+  },
 });

@@ -1,4 +1,5 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { connectStorage } from '../memory.js';
 import { CreateClientOptions, Feature } from '../types.js';
 import { handleHelp } from './builtins/help.js';
 import { createCommandBody } from './command-body.js';
@@ -19,6 +20,7 @@ export const createClient = (options: CreateClientOptions) => {
   });
 
   const guildFeatures = new Map<string, Feature[]>();
+  const storage = connectStorage();
 
   client.on(Events.ClientReady, async () => {
     const guilds = await client.guilds.fetch();
@@ -29,10 +31,13 @@ export const createClient = (options: CreateClientOptions) => {
     guilds.forEach((x) => logger?.log(`- [${x.id}]: ${x.name}`));
 
     guilds.forEach((guild) => {
-      const setupCtx = createSetupContext(guild.id, client, options);
       guildFeatures.set(
         guild.id,
-        (featureBuilders ?? []).map((feat) => feat(setupCtx)),
+        (featureBuilders ?? []).map((feat) =>
+          feat.create(
+            createSetupContext(feat, guild.id, client, options, storage),
+          ),
+        ),
       );
     });
   });

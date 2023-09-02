@@ -1,13 +1,20 @@
 import { ChannelType, Client } from 'discord.js';
-import { connectStorage } from '../memory.js';
 import { Timers, createTimers } from '../timers.js';
-import { CreateClientOptions, Memory, SetupContext } from '../types.js';
+import {
+  CreateClientOptions,
+  FeatureId,
+  Memory,
+  SetupContext,
+  StorageConnection,
+} from '../types.js';
 import { formatError } from './format-error.js';
 
 export const createSetupContext = (
+  featureId: FeatureId,
   guildId: string,
   client: Client,
   options: CreateClientOptions,
+  storage: StorageConnection,
 ): SetupContext => {
   const { config, logger } = options;
 
@@ -29,15 +36,13 @@ export const createSetupContext = (
     await channel.send(message);
   };
 
-  const storage = connectStorage();
+  const requestMemory = <T>(): Memory<T> =>
+    storage.getMemory(guildId, featureId.id);
 
-  const requestMemory = <T>(id: string): Memory<T> =>
-    storage.getMemory(guildId, id);
-
-  const requestTimers = (name: string): Timers =>
+  const requestTimers = (): Timers =>
     createTimers((e) => {
       const details = e instanceof Error ? formatError(e) : String(e);
-      logger?.error(`feature \`${name}\` crashed:`, details);
+      logger?.error(`feature \`${featureId.name}\` crashed:`, details);
     });
 
   return {

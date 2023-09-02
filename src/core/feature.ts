@@ -1,25 +1,21 @@
-import { Feature, FeatureFactory, SetupContext } from './types.js';
+import { FeatureFactory, FeatureInstance, SetupContext } from './types.js';
 
-type FeatureDefinition = {
-  name: string;
-  summary?: string;
-  usage?: string;
-  matcher: RegExp;
-  onCommand?: Feature['onCommand'];
+type StrictOmit<T, U extends keyof T> = Omit<T, U>;
+
+type FeatureDefinition = StrictOmit<FeatureFactory, 'create'> & {
+  create: (ctx: SetupContext) => FeatureInstance;
 };
 
-const noop = () => Promise.resolve();
-
-export const defineFeature =
-  (definition: (ctx: SetupContext) => FeatureDefinition): FeatureFactory =>
-  (ctx: SetupContext): Feature => {
-    const instance = definition(ctx);
-
+export const defineFeature = (
+  definition: FeatureDefinition,
+): FeatureFactory => ({
+  id: definition.id,
+  name: definition.name,
+  create: (ctx) => {
+    const instance = definition.create(ctx);
     return {
-      name: instance.name,
-      summary: instance.summary ?? '不明なモジュール',
-      usage: instance.usage ?? null,
-      matcher: instance.matcher,
-      onCommand: instance.onCommand ?? noop,
+      ...definition,
+      ...instance,
     };
-  };
+  },
+});

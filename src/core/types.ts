@@ -31,13 +31,19 @@ export type CommandBody = {
   line: string;
 };
 
-export type Feature = {
+export type FeatureId = {
+  id: string;
   name: string;
-  summary: string;
+};
+
+export type FeatureInstance = {
+  summary: string | null;
   usage: string | null;
   matcher: RegExp;
   onCommand: (ctx: CommandContext, command: CommandBody) => Promise<void>;
 };
+
+export type Feature = FeatureId & FeatureInstance;
 
 export type Memory<T> = {
   get: (key: string) => Promise<T | undefined>;
@@ -46,14 +52,20 @@ export type Memory<T> = {
   entries: () => Promise<[string, T][]>;
 };
 
+export type StorageConnection = {
+  getMemory: <T>(guildId: string, unitId: string) => Memory<T>;
+};
+
 export type SetupContext = {
   config: Config;
   post: (channelId: string, message: string) => Promise<void>;
-  requestMemory: <T>(id: string) => Memory<T>;
-  requestTimers: (name: string) => Timers;
+  requestMemory: <T>() => Memory<T>;
+  requestTimers: () => Timers;
 };
 
-export type FeatureFactory = (options: SetupContext) => Feature;
+export type FeatureFactory = FeatureId & {
+  create: (options: SetupContext) => Feature;
+};
 
 export type CreateClientOptions = {
   config: Config;

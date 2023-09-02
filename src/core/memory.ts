@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Memory } from './types.js';
+import { Memory, StorageConnection } from './types.js';
 
 const PATH = './memory.json';
 const TMPPATH = `${PATH}.tmp` as const;
@@ -31,7 +31,7 @@ const saveStorage = (storage: Storage) => {
   fs.renameSync(TMPPATH, PATH);
 };
 
-export const connectStorage = () => {
+export const connectStorage = (): StorageConnection => {
   const storage = loadStorage();
 
   const state = {

@@ -46,55 +46,55 @@ $ stack
 \`\`\`
 `.slice(1, -1);
 
-export default defineFeature(({ config }) => ({
+export default defineFeature({
+  id: '3345962d-3447-4f35-bac5-a7d9e01ab7a8',
   name: 'rpn',
+  create: ({ config }) => ({
+    summary: 'スタックベースの計算器',
+    usage,
+    matcher: new RegExp(`${config.core.prefix}rpn`),
 
-  summary: 'スタックベースの計算器',
+    onCommand: async (ctx, command) => {
+      const result = evaluate(command.args);
 
-  usage,
+      switch (result[0]) {
+        case 'Ok': {
+          const [_type, lines] = result;
+          await ctx.post(`OK:\n${lines}`);
 
-  matcher: new RegExp(`${config.core.prefix}rpn`),
+          return;
+        }
 
-  onCommand: async (ctx, command) => {
-    const result = evaluate(command.args);
+        case 'Bottom': {
+          const [_type, index, lines] = result;
+          await ctx.post(`ERR: ${index}: Insufficient stack.\n${lines}`);
 
-    switch (result[0]) {
-      case 'Ok': {
-        const [_type, lines] = result;
-        await ctx.post(`OK:\n${lines}`);
+          return;
+        }
 
-        return;
+        case 'NaN': {
+          const [_type, index, lines] = result;
+          await ctx.post(`ERR: ${index}: Encountered NaN.\n${lines}`);
+
+          return;
+        }
+
+        case 'Infinity': {
+          const [_type, index, lines] = result;
+          await ctx.post(`ERR: ${index}: Encountered Infinity.\n${lines}`);
+
+          return;
+        }
+
+        case 'Empty': {
+          await ctx.post(usage);
+
+          return;
+        }
+
+        default:
+          throw new Error();
       }
-
-      case 'Bottom': {
-        const [_type, index, lines] = result;
-        await ctx.post(`ERR: ${index}: Insufficient stack.\n${lines}`);
-
-        return;
-      }
-
-      case 'NaN': {
-        const [_type, index, lines] = result;
-        await ctx.post(`ERR: ${index}: Encountered NaN.\n${lines}`);
-
-        return;
-      }
-
-      case 'Infinity': {
-        const [_type, index, lines] = result;
-        await ctx.post(`ERR: ${index}: Encountered Infinity.\n${lines}`);
-
-        return;
-      }
-
-      case 'Empty': {
-        await ctx.post(usage);
-
-        return;
-      }
-
-      default:
-        throw new Error();
-    }
-  },
-}));
+    },
+  }),
+});

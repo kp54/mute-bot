@@ -23,28 +23,30 @@ const post = async (
   await ctx.reply(lines.join('\n'));
 };
 
-export default defineFeature(({ config }) => ({
+export default defineFeature({
+  id: '506a6606-06c9-469e-9a93-d3d28cf40f13',
   name: 'pokemon',
+  create: ({ config }) => ({
+    summary: `(${config.core.prefix}pt) ポケモン耐性クイズ`,
+    usage: null,
+    matcher: new RegExp(`^${config.core.prefix}pt$`),
 
-  summary: `(${config.core.prefix}pt) ポケモン耐性クイズ`,
+    onCommand: async (ctx) => {
+      if (ctx.type !== 'CHANNEL') {
+        return;
+      }
 
-  matcher: new RegExp(`^${config.core.prefix}pt$`),
+      const [type1, type2] = randomType();
 
-  onCommand: async (ctx) => {
-    if (ctx.type !== 'CHANNEL') {
-      return;
-    }
+      if (type2 === null) {
+        const id = pokemonTypes.indexOf(type1);
+        const resistance = typeResistances[id];
+        await post(ctx, resistance, [type1]);
+        return;
+      }
 
-    const [type1, type2] = randomType();
-
-    if (type2 === null) {
-      const id = pokemonTypes.indexOf(type1);
-      const resistance = typeResistances[id];
-      await post(ctx, resistance, [type1]);
-      return;
-    }
-
-    const resistance = combineResistances(type1, type2);
-    await post(ctx, resistance, [type1, type2]);
-  },
-}));
+      const resistance = combineResistances(type1, type2);
+      await post(ctx, resistance, [type1, type2]);
+    },
+  }),
+});

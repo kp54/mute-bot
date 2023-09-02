@@ -10,7 +10,7 @@ export const handleHelp = async (
   const usage = async () => {
     const lines = [
       '```',
-      ...features.map((x) => `${x.name} : ${x.summary}`),
+      ...features.map((x) => `${x.name} : ${x.summary ?? '不明なモジュール'}`),
       '```',
     ].join('\n');
 

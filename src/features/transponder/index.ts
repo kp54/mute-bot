@@ -20,83 +20,81 @@ const usage = (prefix: string) =>
     '```',
   ].join('\n');
 
-export default defineFeature((setupCtx) => {
-  const { prefix } = setupCtx.config.core;
-  const memory = setupCtx.requestMemory<string>(
-    'd91d7e6d-f5bd-4ce3-b54c-d42aa4e4106e',
-  );
+export default defineFeature({
+  id: 'd91d7e6d-f5bd-4ce3-b54c-d42aa4e4106e',
+  name: 'transponder',
+  create: (setupCtx) => {
+    const { prefix } = setupCtx.config.core;
+    const memory = setupCtx.requestMemory<string>();
 
-  return {
-    name: 'transponder',
+    return {
+      summary: '自動応答',
+      usage: usage(prefix),
+      matcher: new RegExp(`(?<manage>^${prefix}transponder$)|(^.)`),
 
-    summary: '自動応答',
-
-    usage: usage(prefix),
-
-    matcher: new RegExp(`(?<manage>^${prefix}transponder$)|(^.)`),
-
-    onCommand: async (ctx, command) => {
-      if (ctx.type !== 'CHANNEL') {
-        return;
-      }
-
-      const isManage = command.match.groups?.manage !== undefined;
-      if (!isManage) {
-        const resp = await memory.get(command.line);
-        if (resp !== undefined) {
-          await ctx.reply(resp);
-        }
-        return;
-      }
-
-      const [action, query, answer] = parse(command.args);
-      switch (action) {
-        case 'Usage': {
-          await ctx.reply(usage(prefix));
+      onCommand: async (ctx, command) => {
+        if (ctx.type !== 'CHANNEL') {
           return;
         }
 
-        case 'List': {
-          const items = await memory.entries();
+        const isManage = command.match.groups?.manage !== undefined;
+        if (!isManage) {
+          const resp = await memory.get(command.line);
+          if (resp !== undefined) {
+            await ctx.reply(resp);
+          }
+          return;
+        }
 
-          if (items.length === 0) {
-            await ctx.reply('自動応答がありません');
+        const [action, query, answer] = parse(command.args);
+        switch (action) {
+          case 'Usage': {
+            await ctx.reply(usage(prefix));
             return;
           }
 
-          const lines = [
-            '```',
-            ...items.map(([key, value]) => `${key} : ${value}`),
-            '```',
-          ];
-          await ctx.reply(lines.join('\n'));
-          return;
-        }
+          case 'List': {
+            const items = await memory.entries();
 
-        case 'Set': {
-          await memory.set(query, answer);
-          await ctx.reply('自動応答を設定しました');
-          return;
-        }
+            if (items.length === 0) {
+              await ctx.reply('自動応答がありません');
+              return;
+            }
 
-        case 'Unset': {
-          await memory.delete(query);
-          await ctx.reply('自動応答を解除しました');
-          return;
-        }
+            const lines = [
+              '```',
+              ...items.map(([key, value]) => `${key} : ${value}`),
+              '```',
+            ];
+            await ctx.reply(lines.join('\n'));
+            return;
+          }
 
-        case 'Error': {
-          const lines = [
-            'エラー',
-            `\`${prefix}transponder help\` でガイドを表示します`,
-          ];
-          await ctx.reply(lines.join('\n'));
-          return;
-        }
+          case 'Set': {
+            await memory.set(query, answer);
+            await ctx.reply('自動応答を設定しました');
+            return;
+          }
 
-        default:
-          throw new Error();
-      }
-    },
-  };
+          case 'Unset': {
+            await memory.delete(query);
+            await ctx.reply('自動応答を解除しました');
+            return;
+          }
+
+          case 'Error': {
+            const lines = [
+              'エラー',
+              `\`${prefix}transponder help\` でガイドを表示します`,
+            ];
+            await ctx.reply(lines.join('\n'));
+            return;
+          }
+
+          default:
+            throw new Error();
+        }
+      },
+    };
+  },
 });

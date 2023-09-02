@@ -49,13 +49,13 @@ const usage = (prefix: string) =>
     '```',
   ].join('\n');
 
-export default defineFeature(
-  ({ config, requestMemory, requestTimers, post }) => {
-    const memory = requestMemory<Reminder>(
-      '5a834c35-7c00-43c6-9d79-5ae7aef9f755',
-    );
+export default defineFeature({
+  id: '5a834c35-7c00-43c6-9d79-5ae7aef9f755',
+  name: 'remind',
+  create: ({ config, requestMemory, requestTimers, post }) => {
+    const memory = requestMemory<Reminder>();
 
-    const timers = requestTimers('remind');
+    const timers = requestTimers();
 
     const { interval } = config.remind;
     const tick = async (): Promise<void> => {
@@ -91,12 +91,8 @@ export default defineFeature(
     const { prefix } = config.core;
 
     return {
-      name: 'remind',
-
       summary: 'リマインダー',
-
       usage: usage(prefix),
-
       matcher: new RegExp(`^${prefix}remind$`),
 
       onCommand: async (ctx, command) => {
@@ -192,4 +188,4 @@ export default defineFeature(
       },
     };
   },
-);
+});
