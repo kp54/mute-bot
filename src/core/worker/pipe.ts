@@ -1,4 +1,4 @@
-import type { Worker, MessagePort } from 'worker_threads';
+import type { MessagePort } from 'worker_threads';
 import { Message, MessageHandler, Pipe } from './types.js';
 
 const randomId = () => Math.random().toString();
@@ -11,9 +11,10 @@ export const wrapWorkerPort = (
     new Promise<unknown>((resolve) => {
       const requestId = randomId();
 
-      const onMessage = (message: Message) => {
+      const onMessage = (ev: MessageEvent<Message>) => {
+        const message = ev.data;
         if (message.kind === 'response' && message.requestId === requestId) {
-          worker.off('message', onMessage);
+          worker.removeEventListener('message', onMessage);
           resolve(message.payload);
         }
       };
@@ -24,12 +25,13 @@ export const wrapWorkerPort = (
         payload,
       };
 
-      worker.on('message', onMessage);
+      worker.addEventListener('message', onMessage);
       worker.postMessage(request);
     });
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  worker.on('message', async (message: Message) => {
+  worker.addEventListener('message', async (ev: MessageEvent<Message>) => {
+    const message = ev.data;
     if (message.kind !== 'request') {
       return;
     }

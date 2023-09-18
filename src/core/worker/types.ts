@@ -15,8 +15,10 @@ export type Message = {
   payload: unknown;
 };
 
-export type MessageHandler = (payload: unknown) => Promise<unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type MessageHandler = (payload: any) => Promise<any>;
 
 export type Pipe = {
-  post: (payload: unknown) => Promise<unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  post: (payload: any) => Promise<any>;
 };
