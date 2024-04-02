@@ -1,3 +1,4 @@
+import { enumerate } from "../../utils/enumerate.js";
 import { pokemonTypes, typeResistances } from "./constants.js";
 import type { PokemonType } from "./types.js";
 
@@ -20,7 +21,7 @@ export const prettyFormatResistance = (resistance: readonly number[]) => {
 	const immune: PokemonType[] = [];
 	const resist: PokemonType[] = [];
 
-	pokemonTypes.forEach((type, i) => {
+	for (const [i, type] of enumerate(pokemonTypes)) {
 		const rate = resistance[i];
 
 		switch (true) {
@@ -38,7 +39,7 @@ export const prettyFormatResistance = (resistance: readonly number[]) => {
 			default:
 				throw new Error();
 		}
-	});
+	}
 
 	const lines = [];
 	if (0 < weak.length) {
@@ -60,11 +61,12 @@ export const randomType = (): [PokemonType, PokemonType | null] => {
 	);
 
 	if (type1 === null) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// biome-ignore lint/style/noNonNullAssertion: only one `null` included in the array
 		return [type2!, null];
 	}
+
 	if (type2 === null) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// biome-ignore lint/style/noNonNullAssertion: only one `null` included in the array
 		return [type1!, null];
 	}
 

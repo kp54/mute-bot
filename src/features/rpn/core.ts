@@ -1,4 +1,6 @@
-class EvalError extends Error {
+import { enumerate } from "../../utils/enumerate.js";
+
+class EvaluationError extends Error {
 	kind: "Bottom" | "NaN" | "Infinity";
 
 	index: number;
@@ -23,11 +25,11 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
 	const push = (line: number, value: number) => {
 		if (Number.isNaN(value)) {
-			throw new EvalError("NaN", line, buffer);
+			throw new EvaluationError("NaN", line, buffer);
 		}
 
 		if (!Number.isFinite(value)) {
-			throw new EvalError("Infinity", line, buffer);
+			throw new EvaluationError("Infinity", line, buffer);
 		}
 
 		stack.push(value);
@@ -36,12 +38,12 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 	const pop = (line: number) => {
 		const value = stack.pop();
 		if (value === undefined) {
-			throw new EvalError("Bottom", line, buffer);
+			throw new EvaluationError("Bottom", line, buffer);
 		}
 		return value;
 	};
 
-	tokens.forEach((token, i) => {
+	for (const [i, token] of enumerate(tokens)) {
 		switch (token) {
 			case "+":
 			case "add": {
@@ -171,7 +173,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 				push(i, n);
 			}
 		}
-	});
+	}
 
 	return buffer.join("\n");
 };
@@ -185,7 +187,7 @@ export const evaluate = (tokens: ReadonlyArray<string>) => {
 		const result = evaluateInner(tokens);
 		return ["Ok", result] as const;
 	} catch (e) {
-		if (!(e instanceof EvalError)) {
+		if (!(e instanceof EvaluationError)) {
 			throw e;
 		}
 

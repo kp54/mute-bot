@@ -8,10 +8,10 @@ export const parseCommand = (line: string): ReadonlyArray<string> => {
 
 	const whitespaces = /\s/;
 
-	[...line, "\n"].forEach((char) => {
+	for (const char of [...line, "\n"]) {
 		if (whitespaces.test(char)) {
 			if (isInterWord) {
-				return;
+				continue;
 			}
 
 			if (withinQuote === "NONE") {
@@ -19,7 +19,7 @@ export const parseCommand = (line: string): ReadonlyArray<string> => {
 				buffer.splice(0);
 				isInterWord = true;
 				result.push(part);
-				return;
+				continue;
 			}
 		}
 
@@ -28,20 +28,23 @@ export const parseCommand = (line: string): ReadonlyArray<string> => {
 		if (hasLeadingBackslash) {
 			buffer.push(char);
 			hasLeadingBackslash = false;
-			return;
+			continue;
 		}
 
 		if (char === `'`) {
 			switch (withinQuote) {
 				case "NONE":
 					withinQuote = "SINGLE";
-					return;
+					continue;
+
 				case "SINGLE":
 					withinQuote = "NONE";
-					return;
+					continue;
+
 				case "DOUBLE":
 					buffer.push(`'`);
-					return;
+					continue;
+
 				default:
 					throw new Error();
 			}
@@ -51,13 +54,16 @@ export const parseCommand = (line: string): ReadonlyArray<string> => {
 			switch (withinQuote) {
 				case "NONE":
 					withinQuote = "DOUBLE";
-					return;
+					continue;
+
 				case "SINGLE":
 					buffer.push(`"`);
-					return;
+					continue;
+
 				case "DOUBLE":
 					withinQuote = "NONE";
-					return;
+					continue;
+
 				default:
 					throw new Error();
 			}
@@ -65,11 +71,11 @@ export const parseCommand = (line: string): ReadonlyArray<string> => {
 
 		if (char === "\\") {
 			hasLeadingBackslash = true;
-			return;
+			continue;
 		}
 
 		buffer.push(char);
-	});
+	}
 
 	if (withinQuote !== "NONE" || hasLeadingBackslash) {
 		// fallback to simple split

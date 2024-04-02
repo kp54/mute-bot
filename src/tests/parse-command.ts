@@ -27,7 +27,7 @@ export const testParseCommand = () => {
 	// eslint-disable-next-line no-console
 	console.log("testing for parseCommand:");
 
-	cases.forEach(([input, expected]) => {
+	for (const [input, expected] of cases) {
 		const actual = parseCommand(input);
 
 		const fail = () =>
@@ -71,7 +71,7 @@ export const testParseCommand = () => {
 		}
 
 		pass();
-	});
+	}
 };
 
 export default { testParseCommand };

@@ -35,15 +35,17 @@ export const createClient = (options: CreateClientOptions) => {
 		logger?.log(`Logged in as ${client.user?.tag}`);
 
 		logger?.log("serving for:");
-		guilds.forEach((x) => logger?.log(`- [${x.id}]: ${x.name}`));
+		for (const [, guild] of guilds) {
+			logger?.log(`- [${guild.id}]: ${guild.name}`);
+		}
 
-		guilds.forEach((guild) => {
+		for (const [, guild] of guilds) {
 			const setupCtx = createSetupContext(guild.id, client, options);
 			guildFeatures.set(
 				guild.id,
 				(featureBuilders ?? []).map((feat) => feat(setupCtx)),
 			);
-		});
+		}
 	});
 
 	client.on(Events.MessageCreate, async (message) => {

@@ -10,13 +10,11 @@ type Container = Record<string, Unit<unknown> | undefined>;
 type Unit<T> = Record<string, T | undefined>;
 
 const loadStorage = (): Storage => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let raw: any = null;
+	let raw: string | null = null;
 	try {
 		raw = fs.readFileSync(PATH, { encoding: "utf-8" });
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	} catch (e: any) {
-		if (e.code === "ENOENT") {
+	} catch (e) {
+		if (e instanceof Error && "code" in e && e.code === "ENOENT") {
 			return Object.create(null);
 		}
 		throw e;
