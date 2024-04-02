@@ -24,14 +24,12 @@ const zip = <T, U>(
 };
 
 export const testParseCommand = () => {
-	// eslint-disable-next-line no-console
 	console.log("testing for parseCommand:");
 
 	for (const [input, expected] of cases) {
 		const actual = parseCommand(input);
 
 		const fail = () =>
-			// eslint-disable-next-line no-console
 			console.log(
 				[
 					"[FAIL]",
@@ -41,7 +39,6 @@ export const testParseCommand = () => {
 				].join(" "),
 			);
 		const pass = () =>
-			// eslint-disable-next-line no-console
 			console.log(
 				[
 					"[PASS]",

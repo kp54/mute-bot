@@ -31,7 +31,7 @@ const newGame = (): Game => ({
 
 const validate = (attempt: string) => {
 	const used = new Set<string>();
-	// eslint-disable-next-line no-restricted-syntax
+
 	for (const c of attempt) {
 		if (used.has(c)) {
 			return false;
