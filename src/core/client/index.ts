@@ -21,7 +21,6 @@ export const createClient = (options: CreateClientOptions) => {
 
 	const client = new Client({
 		intents:
-			// eslint-disable-next-line no-bitwise
 			GatewayIntentBits.Guilds |
 			GatewayIntentBits.GuildMessages |
 			GatewayIntentBits.MessageContent,
