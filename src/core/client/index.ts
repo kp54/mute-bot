@@ -1,104 +1,104 @@
-import { Client, Events, GatewayIntentBits } from 'discord.js';
-import { CreateClientOptions, Feature } from '../types.js';
-import { handleHelp } from './builtins/help.js';
-import { createCommandBody } from './command-body.js';
-import { createCommandContext } from './command-context.js';
-import { parseCommand } from './parse-command.js';
-import { createSetupContext } from './setup-context.js';
+import { Client, Events, GatewayIntentBits } from "discord.js";
+import type { CreateClientOptions, Feature } from "../types.js";
+import { handleHelp } from "./builtins/help.js";
+import { createCommandBody } from "./command-body.js";
+import { createCommandContext } from "./command-context.js";
+import { parseCommand } from "./parse-command.js";
+import { createSetupContext } from "./setup-context.js";
 
 const formatError = (e: Error): string => {
-  const lines = [`${e.name}: ${e.message}`, e.stack];
+	const lines = [`${e.name}: ${e.message}`, e.stack];
 
-  if (e.cause instanceof Error) {
-    lines.push(formatError(e.cause));
-  }
+	if (e.cause instanceof Error) {
+		lines.push(formatError(e.cause));
+	}
 
-  return lines.join('\n');
+	return lines.join("\n");
 };
 
 export const createClient = (options: CreateClientOptions) => {
-  const { config, features: featureBuilders, logger } = options;
+	const { config, features: featureBuilders, logger } = options;
 
-  const client = new Client({
-    intents:
-      // eslint-disable-next-line no-bitwise
-      GatewayIntentBits.Guilds |
-      GatewayIntentBits.GuildMessages |
-      GatewayIntentBits.MessageContent,
-  });
+	const client = new Client({
+		intents:
+			// eslint-disable-next-line no-bitwise
+			GatewayIntentBits.Guilds |
+			GatewayIntentBits.GuildMessages |
+			GatewayIntentBits.MessageContent,
+	});
 
-  const guildFeatures = new Map<string, Feature[]>();
+	const guildFeatures = new Map<string, Feature[]>();
 
-  client.on(Events.ClientReady, async () => {
-    const guilds = await client.guilds.fetch();
+	client.on(Events.ClientReady, async () => {
+		const guilds = await client.guilds.fetch();
 
-    logger?.log(`Logged in as ${client.user?.tag}`);
+		logger?.log(`Logged in as ${client.user?.tag}`);
 
-    logger?.log('serving for:');
-    guilds.forEach((x) => logger?.log(`- [${x.id}]: ${x.name}`));
+		logger?.log("serving for:");
+		guilds.forEach((x) => logger?.log(`- [${x.id}]: ${x.name}`));
 
-    guilds.forEach((guild) => {
-      const setupCtx = createSetupContext(guild.id, client, options);
-      guildFeatures.set(
-        guild.id,
-        (featureBuilders ?? []).map((feat) => feat(setupCtx)),
-      );
-    });
-  });
+		guilds.forEach((guild) => {
+			const setupCtx = createSetupContext(guild.id, client, options);
+			guildFeatures.set(
+				guild.id,
+				(featureBuilders ?? []).map((feat) => feat(setupCtx)),
+			);
+		});
+	});
 
-  client.on(Events.MessageCreate, async (message) => {
-    if (message.author.id === client.user?.id) {
-      return;
-    }
+	client.on(Events.MessageCreate, async (message) => {
+		if (message.author.id === client.user?.id) {
+			return;
+		}
 
-    if (message.guildId === null) {
-      return;
-    }
+		if (message.guildId === null) {
+			return;
+		}
 
-    const features = guildFeatures.get(message.guildId) ?? [];
+		const features = guildFeatures.get(message.guildId) ?? [];
 
-    const ctx = createCommandContext(message);
-    if (ctx === null) {
-      return;
-    }
+		const ctx = createCommandContext(message);
+		if (ctx === null) {
+			return;
+		}
 
-    const line = message.content.trim();
-    const argv = parseCommand(line);
+		const line = message.content.trim();
+		const argv = parseCommand(line);
 
-    if (argv.length === 0) {
-      return;
-    }
+		if (argv.length === 0) {
+			return;
+		}
 
-    if (await handleHelp(config, features, argv, message)) {
-      return;
-    }
+		if (await handleHelp(config, features, argv, message)) {
+			return;
+		}
 
-    await Promise.all(
-      features.map(async (feat) => {
-        const body = createCommandBody(feat.matcher, line, argv);
-        if (body === null) {
-          return;
-        }
+		await Promise.all(
+			features.map(async (feat) => {
+				const body = createCommandBody(feat.matcher, line, argv);
+				if (body === null) {
+					return;
+				}
 
-        try {
-          await feat.onCommand(ctx, body);
-        } catch (e) {
-          const details = e instanceof Error ? formatError(e) : String(e);
-          logger?.error(`feature \`${feat.name}\` crashed:`, details);
-        }
-      }),
-    );
-  });
+				try {
+					await feat.onCommand(ctx, body);
+				} catch (e) {
+					const details = e instanceof Error ? formatError(e) : String(e);
+					logger?.error(`feature \`${feat.name}\` crashed:`, details);
+				}
+			}),
+		);
+	});
 
-  const run = async () => {
-    await client.login(config.core.discordToken);
-  };
+	const run = async () => {
+		await client.login(config.core.discordToken);
+	};
 
-  return {
-    run,
-  };
+	return {
+		run,
+	};
 };
 
 export default {
-  createClient,
+	createClient,
 };

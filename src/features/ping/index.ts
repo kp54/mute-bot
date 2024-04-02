@@ -1,13 +1,13 @@
-import { defineFeature } from '../../core/feature.js';
+import { defineFeature } from "../../core/feature.js";
 
 export default defineFeature(({ config }) => ({
-  name: 'ping',
+	name: "ping",
 
-  matcher: new RegExp(`^${config.core.prefix}ping$`),
+	matcher: new RegExp(`^${config.core.prefix}ping$`),
 
-  onCommand: async (ctx) => {
-    if (ctx.type === 'CHANNEL') {
-      await ctx.reply('pong!');
-    }
-  },
+	onCommand: async (ctx) => {
+		if (ctx.type === "CHANNEL") {
+			await ctx.reply("pong!");
+		}
+	},
 }));

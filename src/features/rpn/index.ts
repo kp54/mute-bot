@@ -1,5 +1,5 @@
-import { defineFeature } from '../../core/feature.js';
-import { evaluate } from './core.js';
+import { defineFeature } from "../../core/feature.js";
+import { evaluate } from "./core.js";
 
 const usage = `
 \`\`\`
@@ -47,54 +47,54 @@ $ stack
 `.slice(1, -1);
 
 export default defineFeature(({ config }) => ({
-  name: 'rpn',
+	name: "rpn",
 
-  summary: 'スタックベースの計算器',
+	summary: "スタックベースの計算器",
 
-  usage,
+	usage,
 
-  matcher: new RegExp(`${config.core.prefix}rpn`),
+	matcher: new RegExp(`${config.core.prefix}rpn`),
 
-  onCommand: async (ctx, command) => {
-    const result = evaluate(command.args);
+	onCommand: async (ctx, command) => {
+		const result = evaluate(command.args);
 
-    switch (result[0]) {
-      case 'Ok': {
-        const [_type, lines] = result;
-        await ctx.post(`OK:\n${lines}`);
+		switch (result[0]) {
+			case "Ok": {
+				const [_type, lines] = result;
+				await ctx.post(`OK:\n${lines}`);
 
-        return;
-      }
+				return;
+			}
 
-      case 'Bottom': {
-        const [_type, index, lines] = result;
-        await ctx.post(`ERR: ${index}: Insufficient stack.\n${lines}`);
+			case "Bottom": {
+				const [_type, index, lines] = result;
+				await ctx.post(`ERR: ${index}: Insufficient stack.\n${lines}`);
 
-        return;
-      }
+				return;
+			}
 
-      case 'NaN': {
-        const [_type, index, lines] = result;
-        await ctx.post(`ERR: ${index}: Encountered NaN.\n${lines}`);
+			case "NaN": {
+				const [_type, index, lines] = result;
+				await ctx.post(`ERR: ${index}: Encountered NaN.\n${lines}`);
 
-        return;
-      }
+				return;
+			}
 
-      case 'Infinity': {
-        const [_type, index, lines] = result;
-        await ctx.post(`ERR: ${index}: Encountered Infinity.\n${lines}`);
+			case "Infinity": {
+				const [_type, index, lines] = result;
+				await ctx.post(`ERR: ${index}: Encountered Infinity.\n${lines}`);
 
-        return;
-      }
+				return;
+			}
 
-      case 'Empty': {
-        await ctx.post(usage);
+			case "Empty": {
+				await ctx.post(usage);
 
-        return;
-      }
+				return;
+			}
 
-      default:
-        throw new Error();
-    }
-  },
+			default:
+				throw new Error();
+		}
+	},
 }));
