@@ -1,194 +1,196 @@
-class EvalError extends Error {
-  kind: 'Bottom' | 'NaN' | 'Infinity';
+import { enumerate } from "../../utils/enumerate.js";
 
-  index: number;
+class EvaluationError extends Error {
+	kind: "Bottom" | "NaN" | "Infinity";
 
-  lines: string;
+	index: number;
 
-  constructor(
-    kind: 'Bottom' | 'NaN' | 'Infinity',
-    index: number,
-    buffer: string[],
-  ) {
-    super();
-    this.kind = kind;
-    this.index = index;
-    this.lines = buffer.join('\n');
-  }
+	lines: string;
+
+	constructor(
+		kind: "Bottom" | "NaN" | "Infinity",
+		index: number,
+		buffer: string[],
+	) {
+		super();
+		this.kind = kind;
+		this.index = index;
+		this.lines = buffer.join("\n");
+	}
 }
 
 const evaluateInner = (tokens: ReadonlyArray<string>) => {
-  const buffer: string[] = [];
-  const stack: number[] = [];
+	const buffer: string[] = [];
+	const stack: number[] = [];
 
-  const push = (line: number, value: number) => {
-    if (Number.isNaN(value)) {
-      throw new EvalError('NaN', line, buffer);
-    }
+	const push = (line: number, value: number) => {
+		if (Number.isNaN(value)) {
+			throw new EvaluationError("NaN", line, buffer);
+		}
 
-    if (!Number.isFinite(value)) {
-      throw new EvalError('Infinity', line, buffer);
-    }
+		if (!Number.isFinite(value)) {
+			throw new EvaluationError("Infinity", line, buffer);
+		}
 
-    stack.push(value);
-  };
+		stack.push(value);
+	};
 
-  const pop = (line: number) => {
-    const value = stack.pop();
-    if (value === undefined) {
-      throw new EvalError('Bottom', line, buffer);
-    }
-    return value;
-  };
+	const pop = (line: number) => {
+		const value = stack.pop();
+		if (value === undefined) {
+			throw new EvaluationError("Bottom", line, buffer);
+		}
+		return value;
+	};
 
-  tokens.forEach((token, i) => {
-    switch (token) {
-      case '+':
-      case 'add': {
-        const y = pop(i);
-        const x = pop(i);
+	for (const [i, token] of enumerate(tokens)) {
+		switch (token) {
+			case "+":
+			case "add": {
+				const y = pop(i);
+				const x = pop(i);
 
-        push(i, x + y);
+				push(i, x + y);
 
-        return;
-      }
+				return;
+			}
 
-      case '-':
-      case 'sub': {
-        const y = pop(i);
-        const x = pop(i);
+			case "-":
+			case "sub": {
+				const y = pop(i);
+				const x = pop(i);
 
-        push(i, x - y);
+				push(i, x - y);
 
-        return;
-      }
+				return;
+			}
 
-      case '*':
-      case 'mul': {
-        const y = pop(i);
-        const x = pop(i);
+			case "*":
+			case "mul": {
+				const y = pop(i);
+				const x = pop(i);
 
-        push(i, x * y);
+				push(i, x * y);
 
-        return;
-      }
+				return;
+			}
 
-      case '/':
-      case 'div': {
-        const y = pop(i);
-        const x = pop(i);
+			case "/":
+			case "div": {
+				const y = pop(i);
+				const x = pop(i);
 
-        push(i, x / y);
+				push(i, x / y);
 
-        return;
-      }
+				return;
+			}
 
-      case '%':
-      case 'divmod': {
-        const y = pop(i);
-        const x = pop(i);
+			case "%":
+			case "divmod": {
+				const y = pop(i);
+				const x = pop(i);
 
-        push(i, Math.trunc(x / y));
-        push(i, x % y);
+				push(i, Math.trunc(x / y));
+				push(i, x % y);
 
-        return;
-      }
+				return;
+			}
 
-      case '^':
-      case 'pow': {
-        const y = pop(i);
-        const x = pop(i);
+			case "^":
+			case "pow": {
+				const y = pop(i);
+				const x = pop(i);
 
-        push(i, x ** y);
+				push(i, x ** y);
 
-        return;
-      }
+				return;
+			}
 
-      case '~':
-      case 'log': {
-        const y = pop(i);
-        const x = pop(i);
+			case "~":
+			case "log": {
+				const y = pop(i);
+				const x = pop(i);
 
-        push(i, Math.log(x) / Math.log(y));
+				push(i, Math.log(x) / Math.log(y));
 
-        return;
-      }
+				return;
+			}
 
-      case '_':
-      case 'drop': {
-        pop(i);
+			case "_":
+			case "drop": {
+				pop(i);
 
-        return;
-      }
+				return;
+			}
 
-      case '.':
-      case 'dup': {
-        const x = pop(i);
+			case ".":
+			case "dup": {
+				const x = pop(i);
 
-        push(i, x);
-        push(i, x);
+				push(i, x);
+				push(i, x);
 
-        return;
-      }
+				return;
+			}
 
-      case '<':
-      case 'rol': {
-        const x = stack.shift();
-        if (x !== undefined) {
-          stack.push(x);
-        }
-        return;
-      }
+			case "<":
+			case "rol": {
+				const x = stack.shift();
+				if (x !== undefined) {
+					stack.push(x);
+				}
+				return;
+			}
 
-      case '>':
-      case 'ror': {
-        const x = stack.pop();
-        if (x !== undefined) {
-          stack.unshift(x);
-        }
-        return;
-      }
+			case ">":
+			case "ror": {
+				const x = stack.pop();
+				if (x !== undefined) {
+					stack.unshift(x);
+				}
+				return;
+			}
 
-      case '=':
-      case 'print': {
-        const x = pop(i);
+			case "=":
+			case "print": {
+				const x = pop(i);
 
-        buffer.push(x.toString());
-        push(i, x);
+				buffer.push(x.toString());
+				push(i, x);
 
-        return;
-      }
+				return;
+			}
 
-      case '$':
-      case 'stack': {
-        buffer.push(stack.join(', '));
+			case "$":
+			case "stack": {
+				buffer.push(stack.join(", "));
 
-        return;
-      }
+				return;
+			}
 
-      default: {
-        const n = Number(token);
-        push(i, n);
-      }
-    }
-  });
+			default: {
+				const n = Number(token);
+				push(i, n);
+			}
+		}
+	}
 
-  return buffer.join('\n');
+	return buffer.join("\n");
 };
 
 export const evaluate = (tokens: ReadonlyArray<string>) => {
-  if (tokens.length === 0) {
-    return ['Empty'] as const;
-  }
+	if (tokens.length === 0) {
+		return ["Empty"] as const;
+	}
 
-  try {
-    const result = evaluateInner(tokens);
-    return ['Ok', result] as const;
-  } catch (e) {
-    if (!(e instanceof EvalError)) {
-      throw e;
-    }
+	try {
+		const result = evaluateInner(tokens);
+		return ["Ok", result] as const;
+	} catch (e) {
+		if (!(e instanceof EvaluationError)) {
+			throw e;
+		}
 
-    return [e.kind, e.index, e.lines] as const;
-  }
+		return [e.kind, e.index, e.lines] as const;
+	}
 };

@@ -1,80 +1,86 @@
 export const parseCommand = (line: string): ReadonlyArray<string> => {
-  let withinQuote: 'SINGLE' | 'DOUBLE' | 'NONE' = 'NONE';
-  let hasLeadingBackslash = false;
-  let isInterWord = true;
+	let withinQuote: "SINGLE" | "DOUBLE" | "NONE" = "NONE";
+	let hasLeadingBackslash = false;
+	let isInterWord = true;
 
-  const result: string[] = [];
-  const buffer: string[] = [];
+	const result: string[] = [];
+	const buffer: string[] = [];
 
-  const whitespaces = /\s/;
+	const whitespaces = /\s/;
 
-  [...line, '\n'].forEach((char) => {
-    if (whitespaces.test(char)) {
-      if (isInterWord) {
-        return;
-      }
+	for (const char of [...line, "\n"]) {
+		if (whitespaces.test(char)) {
+			if (isInterWord) {
+				continue;
+			}
 
-      if (withinQuote === 'NONE') {
-        const part = buffer.join('');
-        buffer.splice(0);
-        isInterWord = true;
-        result.push(part);
-        return;
-      }
-    }
+			if (withinQuote === "NONE") {
+				const part = buffer.join("");
+				buffer.splice(0);
+				isInterWord = true;
+				result.push(part);
+				continue;
+			}
+		}
 
-    isInterWord = false;
+		isInterWord = false;
 
-    if (hasLeadingBackslash) {
-      buffer.push(char);
-      hasLeadingBackslash = false;
-      return;
-    }
+		if (hasLeadingBackslash) {
+			buffer.push(char);
+			hasLeadingBackslash = false;
+			continue;
+		}
 
-    if (char === `'`) {
-      switch (withinQuote) {
-        case 'NONE':
-          withinQuote = 'SINGLE';
-          return;
-        case 'SINGLE':
-          withinQuote = 'NONE';
-          return;
-        case 'DOUBLE':
-          buffer.push(`'`);
-          return;
-        default:
-          throw new Error();
-      }
-    }
+		if (char === `'`) {
+			switch (withinQuote) {
+				case "NONE":
+					withinQuote = "SINGLE";
+					continue;
 
-    if (char === `"`) {
-      switch (withinQuote) {
-        case 'NONE':
-          withinQuote = 'DOUBLE';
-          return;
-        case 'SINGLE':
-          buffer.push(`"`);
-          return;
-        case 'DOUBLE':
-          withinQuote = 'NONE';
-          return;
-        default:
-          throw new Error();
-      }
-    }
+				case "SINGLE":
+					withinQuote = "NONE";
+					continue;
 
-    if (char === `\\`) {
-      hasLeadingBackslash = true;
-      return;
-    }
+				case "DOUBLE":
+					buffer.push(`'`);
+					continue;
 
-    buffer.push(char);
-  });
+				default:
+					throw new Error();
+			}
+		}
 
-  if (withinQuote !== 'NONE' || hasLeadingBackslash) {
-    // fallback to simple split
-    return line.split(whitespaces);
-  }
+		if (char === `"`) {
+			switch (withinQuote) {
+				case "NONE":
+					withinQuote = "DOUBLE";
+					continue;
 
-  return result;
+				case "SINGLE":
+					buffer.push(`"`);
+					continue;
+
+				case "DOUBLE":
+					withinQuote = "NONE";
+					continue;
+
+				default:
+					throw new Error();
+			}
+		}
+
+		if (char === "\\") {
+			hasLeadingBackslash = true;
+			continue;
+		}
+
+		buffer.push(char);
+	}
+
+	if (withinQuote !== "NONE" || hasLeadingBackslash) {
+		// fallback to simple split
+		return line.split(whitespaces);
+	}
+
+	return result;
 };

@@ -1,24 +1,24 @@
-import { Config, FeatureFactory } from '../types.js';
+import type { Config, FeatureFactory } from "../types.js";
 
 export type WorkerData = {
-  path: string;
-  config: Config;
+	path: string;
+	config: Config;
 };
 
 export type FeatureModule = {
-  default: FeatureFactory;
+	default: FeatureFactory;
 };
 
 export type Message = {
-  kind: 'request' | 'response';
-  requestId: string;
-  payload: unknown;
+	kind: "request" | "response";
+	requestId: string;
+	payload: unknown;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny:
 export type MessageHandler = (payload: any) => Promise<any>;
 
 export type Pipe = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  post: (payload: any) => Promise<any>;
+	// biome-ignore lint/suspicious/noExplicitAny:
+	post: (payload: any) => Promise<any>;
 };

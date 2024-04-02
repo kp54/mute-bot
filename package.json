@@ -6,8 +6,10 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "lint": "prettier --check src/ && eslint src/** && tsc --noEmit",
-    "lint-fix": "prettier --write src/ && eslint --fix src/**",
+    "lint": "biome check src/",
+    "lint:fix": "biome check --apply src/",
+    "type-check": "tsc --noEmit",
+    "check": "npm run lint && npm run type-check",
     "serve": "node dist/main.js",
     "test": "tsc && node dist/tests/index.js"
   },
@@ -16,17 +18,9 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "@biomejs/biome": "^1.6.3",
     "@tsconfig/recommended": "^1.0.2",
     "@types/luxon": "^3.2.0",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
-    "eslint": "^8.33.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-import-resolver-typescript": "^3.5.3",
-    "eslint-plugin-import": "^2.27.5",
-    "prettier": "^3.0.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
