@@ -23,7 +23,3 @@ export const defineFeature =
 			onCommand: instance.onCommand ?? noop,
 		};
 	};
-
-export default {
-	defineFeature,
-};

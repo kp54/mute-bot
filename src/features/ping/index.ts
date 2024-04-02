@@ -1,6 +1,6 @@
 import { defineFeature } from "../../core/feature.js";
 
-export default defineFeature(({ config }) => ({
+export const ping = defineFeature(({ config }) => ({
 	name: "ping",
 
 	matcher: new RegExp(`^${config.core.prefix}ping$`),

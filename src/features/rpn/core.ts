@@ -194,7 +194,3 @@ export const evaluate = (tokens: ReadonlyArray<string>) => {
 		return [e.kind, e.index, e.lines] as const;
 	}
 };
-
-export default {
-	evaluate,
-};

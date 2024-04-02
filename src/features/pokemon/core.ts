@@ -75,9 +75,3 @@ export const randomType = (): [PokemonType, PokemonType | null] => {
 	}
 	return [type1, type2];
 };
-
-export default {
-	combineResistances,
-	prettyFormatResistance,
-	randomType,
-};

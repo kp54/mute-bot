@@ -86,7 +86,3 @@ export const parse = (timezone: string, args: string[]) => {
 
 	return t(Action.Usage);
 };
-
-export default {
-	parse,
-};

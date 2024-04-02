@@ -98,7 +98,3 @@ export const createCommandContext = (
 
 	return null;
 };
-
-export default {
-	createCommandContext,
-};

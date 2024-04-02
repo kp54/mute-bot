@@ -1,6 +1,6 @@
 import { defineFeature } from "../../core/feature.js";
 
-export default defineFeature(({ config }) => ({
+export const echo = defineFeature(({ config }) => ({
 	name: "echo",
 
 	matcher: new RegExp(`^${config.core.prefix}echo$`),

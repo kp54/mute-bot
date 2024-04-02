@@ -46,7 +46,7 @@ $ stack
 \`\`\`
 `.slice(1, -1);
 
-export default defineFeature(({ config }) => ({
+export const rpn = defineFeature(({ config }) => ({
 	name: "rpn",
 
 	summary: "スタックベースの計算器",

@@ -108,5 +108,3 @@ export const connectStorage = () => {
 	storage ??= connectStorageInner();
 	return storage;
 };
-
-export default { connectStorage };

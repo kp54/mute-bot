@@ -49,7 +49,7 @@ const usage = (prefix: string) =>
 		"```",
 	].join("\n");
 
-export default defineFeature(({ config, requestMemory, post }) => {
+export const remind = defineFeature(({ config, requestMemory, post }) => {
 	const memory = requestMemory<Reminder>(
 		"5a834c35-7c00-43c6-9d79-5ae7aef9f755",
 	);

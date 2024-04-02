@@ -23,7 +23,7 @@ const post = async (
 	await ctx.reply(lines.join("\n"));
 };
 
-export default defineFeature(({ config }) => ({
+export const pokemon = defineFeature(({ config }) => ({
 	name: "pokemon",
 
 	summary: `(${config.core.prefix}pt) ポケモン耐性クイズ`,

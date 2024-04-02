@@ -113,7 +113,7 @@ const handleAttempt = async (
 	await games.set(ctx.threadId, game);
 };
 
-export default defineFeature(({ config, requestMemory }) => {
+export const hitAndBlow = defineFeature(({ config, requestMemory }) => {
 	const games = requestMemory<Game>("a0073f1c-0603-43b9-867b-81e54289d6d5");
 
 	return {

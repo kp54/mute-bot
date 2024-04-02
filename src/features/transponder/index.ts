@@ -1,5 +1,5 @@
 import { defineFeature } from "../../core/feature.js";
-import parse from "./parser.js";
+import { parse } from "./parser.js";
 
 const usage = (prefix: string) =>
 	[
@@ -20,7 +20,7 @@ const usage = (prefix: string) =>
 		"```",
 	].join("\n");
 
-export default defineFeature((setupCtx) => {
+export const transponder = defineFeature((setupCtx) => {
 	const { prefix } = setupCtx.config.core;
 	const memory = setupCtx.requestMemory<string>(
 		"d91d7e6d-f5bd-4ce3-b54c-d42aa4e4106e",

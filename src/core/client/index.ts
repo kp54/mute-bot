@@ -100,7 +100,3 @@ export const createClient = (options: CreateClientOptions) => {
 		run,
 	};
 };
-
-export default {
-	createClient,
-};

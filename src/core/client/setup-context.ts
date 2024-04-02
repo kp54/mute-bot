@@ -36,5 +36,3 @@ export const createSetupContext = (
 		requestMemory,
 	};
 };
-
-export default { createSetupContext };
