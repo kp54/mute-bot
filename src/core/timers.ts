@@ -33,12 +33,10 @@ const wrapFunc = (
 	};
 
 	return () => {
-		// eslint-disable-next-line no-void
 		void wrapped();
 	};
 };
 
-/* eslint-disable no-restricted-globals */
 export const createTimers = (onError: (e: unknown) => unknown): Timers => ({
 	setTimeout: (callback, ms) =>
 		wrapTimeoutId(setTimeout(wrapFunc(callback, onError), ms)),

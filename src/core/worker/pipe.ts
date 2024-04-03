@@ -29,7 +29,6 @@ export const wrapWorkerPort = (
 			worker.postMessage(request);
 		});
 
-	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	worker.addEventListener("message", async (ev: MessageEvent<Message>) => {
 		const message = ev.data;
 		if (message.kind !== "request") {
@@ -77,7 +76,6 @@ export const wrapParentPort = (
 			parentPort.postMessage(request);
 		});
 
-	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	parentPort.on("message", async (message: Message) => {
 		if (message.kind !== "request") {
 			return;
