@@ -1,13 +1,13 @@
 {
   "extends": "@tsconfig/recommended/tsconfig.json",
   "include": [
-    "src/**/*.ts",
+    "src/**/*.ts"
   ],
   "compilerOptions": {
     "outDir": "dist/",
     "isolatedModules": true,
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
-  },
+    "moduleResolution": "node"
+  }
 }
