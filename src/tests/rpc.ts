@@ -9,6 +9,7 @@ type Methods = {
 	split: (str: string) => string[];
 	everything: () => number;
 	void: (foo: number) => void;
+	lazy: (foo: number) => Promise<number>;
 };
 
 const mockTransport = (): RpcTransport => {
@@ -39,6 +40,7 @@ export const testRpc = async () => {
 		split: (str) => str.split(" "),
 		everything: () => 42,
 		void: (foo) => {},
+		lazy: async (foo) => foo,
 	});
 
 	const cases = [
@@ -50,6 +52,7 @@ export const testRpc = async () => {
 		],
 		[["everything", []], 42],
 		[["void", [42]], undefined],
+		[["lazy", [42]], 42],
 	] as const;
 
 	for (const [input, expected] of cases) {

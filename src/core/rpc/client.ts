@@ -55,7 +55,8 @@ export const createRpcClient = <
 			params: params,
 		};
 
-		const pend = withResolvers<ReturnType<Methods[Method]>>();
+		type Result = Awaited<ReturnType<Methods[Method]>>;
+		const pend = withResolvers<Result>();
 		pendings.set(id, pend);
 
 		transport.send(JSON.stringify(req));
