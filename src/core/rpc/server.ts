@@ -22,7 +22,7 @@ export const createRpcServer = <
 		const handler = handlers[message.method];
 
 		try {
-			const data = await handler(message.params);
+			const data = await handler(...message.params);
 
 			const result: RpcResult = {
 				id: message.id,
