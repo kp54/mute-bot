@@ -1,27 +1,25 @@
-export type Transport = {
+export type RpcTransport = {
 	send: (message: string) => void;
 	onRecv: (handler: (message: string) => void) => void;
 };
 
-export type Request = {
+export type RpcRequest = {
 	id: string;
 	kind: "request";
 	method: string;
 	params: unknown[];
 };
 
-export type Result = {
+export type RpcResult = {
 	id: string;
 	kind: "result";
 	result: unknown;
 };
 
-export type Error = {
+export type RpcError = {
 	id: string;
 	kind: "error";
 	message: string;
 };
 
-export type Response = Result | Error;
-
-export type Message = Request | Response;
+export type RpcMessage = RpcRequest | RpcResult | RpcError;

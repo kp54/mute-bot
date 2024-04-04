@@ -1,14 +1,14 @@
 import { ExhaustivenessError } from "../../utils/exhaustiveness-error.js";
 import { withResolvers } from "../../utils/with-resolvers.js";
-import type { Message, Request, Transport } from "./types.js";
+import type { RpcMessage, RpcRequest, RpcTransport } from "./types.js";
 
 const randomId = () => Math.random().toString();
 
-export const createClient = <
+export const createRpcClient = <
 	// biome-ignore lint/suspicious/noExplicitAny:
 	Methods extends Record<string, (...args: any) => any>,
 >(
-	transport: Transport,
+	transport: RpcTransport,
 ) => {
 	// biome-ignore lint/suspicious/noExplicitAny:
 	type Pending = ReturnType<typeof withResolvers<any>>;
@@ -16,7 +16,7 @@ export const createClient = <
 	const pendings = new Map<string, Pending>();
 
 	transport.onRecv((raw) => {
-		const message: Message = JSON.parse(raw);
+		const message: RpcMessage = JSON.parse(raw);
 		if (message.kind === "request") {
 			return;
 		}
@@ -40,10 +40,7 @@ export const createClient = <
 		throw new ExhaustivenessError(message);
 	});
 
-	type MethodNames = string &
-		keyof {
-			[K in keyof Methods]: K extends string ? K : never;
-		};
+	type MethodNames = string & keyof Methods;
 
 	const call = <Method extends MethodNames>(
 		method: Method,
@@ -51,7 +48,7 @@ export const createClient = <
 	) => {
 		const id = randomId();
 
-		const req: Request = {
+		const req: RpcRequest = {
 			id: id,
 			kind: "request",
 			method: method,
