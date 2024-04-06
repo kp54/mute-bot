@@ -1,10 +1,14 @@
-// import { isMainThread, workerData } from 'worker_threads';
-// import { SetupContext } from '../types.js';
-// import { FeatureModule, WorkerData } from './types.js';
+import { isMainThread, parentPort, workerData } from "node:worker_threads";
+import { wrapParentPort } from "./transport.js";
+import type { WorkerData } from "./types.js";
 
-// if (isMainThread) {
-//   throw new Error();
-// }
+if (isMainThread || parentPort === null) {
+	throw new Error();
+}
 
-// const { path, config }: WorkerData = workerData;
-// const { default: factory }: FeatureModule = await import(path);
+const { path, entry, data }: WorkerData = workerData;
+const { [entry]: main } = await import(path);
+
+const transport = wrapParentPort(parentPort);
+
+await main(transport, data);

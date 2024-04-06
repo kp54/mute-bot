@@ -1,28 +1,32 @@
 import { Worker, isMainThread } from "node:worker_threads";
-import { formatError } from "../client/format-error.js";
-import type { Config, Logger } from "../types.js";
+import { wrapWorkerPort } from "./transport.js";
 import type { WorkerData } from "./types.js";
 
-const noNullish = <T>(value: T | null | undefined, message?: string): T => {
-	if (value === null || value === undefined) {
-		throw new Error(message);
-	}
-
-	return value;
-};
-
-export const init = async (logger: Logger, config: Config, path: string) => {
+export const init = async (
+	path: string,
+	entry: string,
+	data: unknown,
+	onError: (e: Error) => void,
+) => {
 	if (!isMainThread) {
 		throw new Error();
 	}
 
 	const workerData: WorkerData = {
-		config,
-		path: noNullish(await import.meta.resolve?.(path)),
+		path: import.meta.resolve(path),
+		entry: entry,
+		data: data,
 	};
 
 	const worker = new Worker("./shim.js", { workerData });
-	worker.on("error", (e) => {
-		logger.error(`feature {foobar} has crashed: ${formatError(e)}`);
-	});
+	worker.on("error", (e) => onError(e));
+
+	const transport = wrapWorkerPort(worker);
+
+	const terminate = () => worker.terminate();
+
+	return {
+		transport,
+		terminate,
+	};
 };
