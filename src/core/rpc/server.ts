@@ -1,9 +1,12 @@
-import type { RpcError, RpcMessage, RpcResult, RpcTransport } from "./types.js";
+import type {
+	RpcError,
+	RpcMessage,
+	RpcMethods,
+	RpcResult,
+	RpcTransport,
+} from "./types.js";
 
-export const createRpcServer = <
-	// biome-ignore lint/suspicious/noExplicitAny:
-	Methods extends Record<string, (...args: any) => any>,
->(
+export const createRpcServer = <Methods extends RpcMethods>(
 	transport: RpcTransport,
 	handlers: {
 		[K in keyof Methods as K extends string ? K : never]: Methods[K];

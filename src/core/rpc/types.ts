@@ -23,3 +23,8 @@ export type RpcError = {
 };
 
 export type RpcMessage = RpcRequest | RpcResult | RpcError;
+
+// biome-ignore lint/suspicious/noExplicitAny:
+export type RpcMethod = (...args: any[]) => any;
+
+export type RpcMethods = Record<string, RpcMethod>;
