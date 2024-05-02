@@ -28,3 +28,10 @@ export type RpcMessage = RpcRequest | RpcResult | RpcError;
 export type RpcMethod = (...args: any[]) => any;
 
 export type RpcMethods = Record<string, RpcMethod>;
+
+export type RpcClient<T extends RpcMethods> = {
+	call: <Method extends string & keyof T>(
+		method: Method,
+		...params: Parameters<T[Method]>
+	) => Promise<Awaited<ReturnType<T[Method]>>>;
+};

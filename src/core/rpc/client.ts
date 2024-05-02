@@ -1,6 +1,7 @@
 import { ExhaustivenessError } from "../../utils/exhaustiveness-error.js";
 import { withResolvers } from "../../utils/with-resolvers.js";
 import type {
+	RpcClient,
 	RpcMessage,
 	RpcMethods,
 	RpcRequest,
@@ -9,9 +10,9 @@ import type {
 
 const randomId = () => Math.random().toString();
 
-export const createRpcClient = <Methods extends RpcMethods>(
+export const createRpcClient = <T extends RpcMethods>(
 	transport: RpcTransport,
-) => {
+): RpcClient<T> => {
 	type Pending = ReturnType<typeof withResolvers<unknown>>;
 
 	const pendings = new Map<string, Pending>();
@@ -41,12 +42,7 @@ export const createRpcClient = <Methods extends RpcMethods>(
 		throw new ExhaustivenessError(message);
 	});
 
-	type MethodNames = string & keyof Methods;
-
-	const call = <Method extends MethodNames>(
-		method: Method,
-		...params: Parameters<Methods[Method]>
-	) => {
+	const call = (method: string, ...params: unknown[]): Promise<unknown> => {
 		const id = randomId();
 
 		const req: RpcRequest = {
@@ -66,5 +62,5 @@ export const createRpcClient = <Methods extends RpcMethods>(
 
 	return {
 		call,
-	};
+	} as RpcClient<T>;
 };
