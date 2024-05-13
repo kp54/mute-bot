@@ -2,7 +2,7 @@ import { Worker, isMainThread } from "node:worker_threads";
 import { wrapWorkerPort } from "./transport.js";
 import type { WorkerData } from "./types.js";
 
-export const init = async (
+export const createWorker = async (
 	path: string,
 	entry: string,
 	data: unknown,
