@@ -25,7 +25,12 @@ export const createClient = (options: CreateClientOptions) => {
 
 		const features = new Array<FeatureInstance>();
 		for (const builder of FeatureBuilders) {
-			const feat = await builder.build(config, logger);
+			const feat = await builder.build(config, logger, client, () => {
+				const index = features.findIndex((x) => x.id === feat.id);
+				if (index !== -1) {
+					features.splice(index, 1);
+				}
+			});
 			features.push(feat);
 		}
 	});
