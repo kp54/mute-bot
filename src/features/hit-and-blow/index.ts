@@ -115,22 +115,29 @@ const handleAttempt = async (
 
 export const hitAndBlow = defineFeature(({ config, requestMemory }) => {
 	const games = requestMemory<Game>("a0073f1c-0603-43b9-867b-81e54289d6d5");
+	const lineMatcher = new RegExp(
+		`(?<init>^${config.core.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`,
+	);
 
 	return {
 		name: "hit-and-blow",
 
 		summary: `(${config.core.prefix}hb) ヒットアンドブロー`,
 
-		matcher: new RegExp(
-			`(?<init>^${config.core.prefix}hb$)|(?<attempt>^[0-9]{${DIGITS}}$)`,
-		),
+		matcher: /./,
+
 		onCommand: async (ctx, command) => {
-			if (command.match.groups?.init !== undefined) {
+			const match = command.line.match(lineMatcher);
+			if (match === null) {
+				return;
+			}
+
+			if (match.groups?.init !== undefined) {
 				await handleInit(ctx, games);
 				return;
 			}
 
-			const attempt = command.match.groups?.attempt;
+			const attempt = match.groups?.attempt;
 			if (attempt !== undefined) {
 				await handleAttempt(ctx, games, attempt);
 			}
