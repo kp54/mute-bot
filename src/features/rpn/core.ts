@@ -19,7 +19,7 @@ class EvaluationError extends Error {
 	}
 }
 
-const evaluateInner = (tokens: ReadonlyArray<string>) => {
+const evaluateInner = (tokens: ReadonlyArray<string>): string => {
 	const buffer: string[] = [];
 	const stack: number[] = [];
 
@@ -52,7 +52,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
 				push(i, x + y);
 
-				return;
+				continue;
 			}
 
 			case "-":
@@ -62,7 +62,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
 				push(i, x - y);
 
-				return;
+				continue;
 			}
 
 			case "*":
@@ -72,7 +72,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
 				push(i, x * y);
 
-				return;
+				continue;
 			}
 
 			case "/":
@@ -82,7 +82,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
 				push(i, x / y);
 
-				return;
+				continue;
 			}
 
 			case "%":
@@ -93,7 +93,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 				push(i, Math.trunc(x / y));
 				push(i, x % y);
 
-				return;
+				continue;
 			}
 
 			case "^":
@@ -103,7 +103,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
 				push(i, x ** y);
 
-				return;
+				continue;
 			}
 
 			case "~":
@@ -113,14 +113,14 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 
 				push(i, Math.log(x) / Math.log(y));
 
-				return;
+				continue;
 			}
 
 			case "_":
 			case "drop": {
 				pop(i);
 
-				return;
+				continue;
 			}
 
 			case ".":
@@ -130,7 +130,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 				push(i, x);
 				push(i, x);
 
-				return;
+				continue;
 			}
 
 			case "<":
@@ -139,7 +139,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 				if (x !== undefined) {
 					stack.push(x);
 				}
-				return;
+				continue;
 			}
 
 			case ">":
@@ -148,7 +148,7 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 				if (x !== undefined) {
 					stack.unshift(x);
 				}
-				return;
+				continue;
 			}
 
 			case "=":
@@ -158,14 +158,14 @@ const evaluateInner = (tokens: ReadonlyArray<string>) => {
 				buffer.push(x.toString());
 				push(i, x);
 
-				return;
+				continue;
 			}
 
 			case "$":
 			case "stack": {
 				buffer.push(stack.join(", "));
 
-				return;
+				continue;
 			}
 
 			default: {
