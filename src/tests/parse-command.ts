@@ -1,72 +1,41 @@
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import { parseCommand } from "../core/client/parse-command.js";
 
-const cases: [string, readonly string[]][] = [
-	["a s d f", ["a", "s", "d", "f"]],
-	[`a ' s ' d`, ["a", " s ", "d"]],
-	[`'a " s ' d`, ['a " s ', "d"]],
-	[`' a '  s  d`, [" a ", "s", "d"]],
-	[`' a '  s  d`, [" a ", "s", "d"]],
-	[" ", []],
-	[`' '`, [" "]],
-	[`''`, [""]],
-	[`'  '  "  "  '  '`, ["  ", "  ", "  "]],
-	[`who's who`, [`who's`, "who"]],
-];
+describe("test for parseCommand", () => {
+	it("sould split words by spaces", () => {
+		assert.deepEqual(parseCommand("a s d f"), ["a", "s", "d", "f"]);
+	});
 
-const zip = <T, U>(
-	xs: ReadonlyArray<T>,
-	ys: ReadonlyArray<U>,
-): Array<[T, U]> => {
-	const length = Math.min(xs.length, ys.length);
-	return Array(length)
-		.fill(0)
-		.map((_, i) => [xs[i], ys[i]]);
-};
+	it("should preserve quoted spaces", () => {
+		assert.deepEqual(parseCommand(`a ' s ' d`), ["a", " s ", "d"]);
+	});
 
-export const testParseCommand = () => {
-	console.log("testing for parseCommand:");
+	it("should parse quoted quotes", () => {
+		assert.deepEqual(parseCommand(`'a " s ' d`), ['a " s ', "d"]);
+	});
 
-	for (const [input, expected] of cases) {
-		const actual = parseCommand(input);
+	it("should ignore escaped quotes", () => {
+		assert.deepEqual(parseCommand(`'a\\'s' "d\\"f"`), [`a's`, `d"f`]);
+	});
 
-		const fail = () =>
-			console.log(
-				[
-					"[FAIL]",
-					`input: ${JSON.stringify(input)},`,
-					`expected: ${JSON.stringify(expected)},`,
-					`actual: ${JSON.stringify(actual)}`,
-				].join(" "),
-			);
-		const pass = () =>
-			console.log(
-				[
-					"[PASS]",
-					`input: ${JSON.stringify(input)},`,
-					`result: ${JSON.stringify(actual)}`,
-				].join(" "),
-			);
+	it("should ignore continuous spaces", () => {
+		assert.deepEqual(parseCommand(`' a '  s  d`), [" a ", "s", "d"]);
+	});
 
-		if (actual === null && expected === null) {
-			pass();
-			return;
-		}
+	it("should leading and trailing spaces", () => {
+		assert.deepEqual(parseCommand(" a s "), ["a", "s"]);
+	});
 
-		if (actual === null || expected === null) {
-			fail();
-			return;
-		}
+	it("should preserve quoted empty elements", () => {
+		assert.deepEqual(parseCommand(`' ' ''`), [" ", ""]);
+	});
 
-		if (actual.length !== expected.length) {
-			fail();
-			return;
-		}
+	it("should accept single and double quotes", () => {
+		assert.deepEqual(parseCommand(`'a s'  "d f"`), ["a s", "d f"]);
+	});
 
-		if (zip(actual, expected).some(([x, y]) => x !== y)) {
-			fail();
-			return;
-		}
-
-		pass();
-	}
-};
+	it("should fallback to plain split if match fails", () => {
+		assert.deepEqual(parseCommand(`who's who`), [`who's`, "who"]);
+	});
+});

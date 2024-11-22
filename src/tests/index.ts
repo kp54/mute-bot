@@ -1,5 +1,1 @@
-import { testParseCommand } from "./parse-command.js";
-
-(() => {
-	testParseCommand();
-})();
+import "./parse-command.js";
