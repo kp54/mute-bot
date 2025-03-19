@@ -8,6 +8,7 @@ import { ping } from "./features/ping/index.js";
 import { pokemon } from "./features/pokemon/index.js";
 import { remind } from "./features/remind/index.js";
 import { rpn } from "./features/rpn/index.js";
+import { terminate } from "./features/terminate/index.js";
 import { transponder } from "./features/transponder/index.js";
 
 const client = createClient({
@@ -21,6 +22,7 @@ const client = createClient({
 		rpn,
 		autoThread,
 		transponder,
+		terminate,
 	],
 	logger: createConsoleLogger(),
 });
