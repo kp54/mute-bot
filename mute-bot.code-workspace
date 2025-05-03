@@ -1,13 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "."
-		}
+			"path": ".",
+		},
 	],
 	"extensions": {
 		"recommendations": [
-			"biomejs.biome"
-		]
+			"biomejs.biome",
+		],
 	},
 	"settings": {
 		"typescript.preferences.importModuleSpecifierEnding": "js",
@@ -16,8 +16,8 @@
 			"editor.formatOnSave": true,
 			"editor.codeActionsOnSave": {
 				"source.fixAll": "explicit",
-				"source.organizeImports": "explicit"
-			}
-		}
-	}
+				"source.organizeImports.biome": "explicit",
+			},
+		},
+	},
 }
