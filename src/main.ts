@@ -1,4 +1,4 @@
-import { config } from "./config.local.js";
+import config from "./config.local.js";
 import { createClient } from "./core/client/index.js";
 import { createConsoleLogger } from "./core/logger.js";
 import { autoThread } from "./features/auto-thread/index.js";
