@@ -1,3 +1,4 @@
+import process from "node:process";
 import { defineFeature } from "../../core/feature.js";
 
 export const terminate = defineFeature(({ config }) => ({
@@ -7,9 +8,5 @@ export const terminate = defineFeature(({ config }) => ({
 
 	matcher: new RegExp(`^${config.core.prefix}terminate$`),
 
-	onCommand: async (ctx) => {
-		setImmediate(() => {
-			throw new Error("terminated by feature/terminate");
-		});
-	},
+	onCommand: () => process.exit(1),
 }));
