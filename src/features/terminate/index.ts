@@ -8,5 +8,8 @@ export const terminate = defineFeature(({ config }) => ({
 
 	matcher: new RegExp(`^${config.core.prefix}terminate$`),
 
-	onCommand: () => process.exit(1),
+	onCommand: async (ctx) => {
+		await ctx.post("termiating mute-bot");
+		process.exit(1);
+	},
 }));
