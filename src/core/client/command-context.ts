@@ -1,7 +1,9 @@
 import {
 	ChannelType,
+	DiscordAPIError,
 	type Message,
 	type PublicThreadChannel,
+	RESTJSONErrorCodes,
 	type TextChannel,
 } from "discord.js";
 import type {
@@ -54,23 +56,25 @@ const createChannelCommandContext = (
 	};
 
 	const threadify = async (name: string): Promise<ThreadCommandContext> => {
-		const thread = await message.startThread({ name });
+		try {
+			await message.startThread({ name });
+		} catch (e: unknown) {
+			if (
+				e instanceof DiscordAPIError &&
+				e.code === RESTJSONErrorCodes.InvalidMessageType
+			) {
+				// thread already created
+			} else {
+				throw new Error("failed to create thread.", { cause: e });
+			}
+		}
 
-		const postThread = async (text: string) => {
-			await thread.send(text);
-		};
+		const { thread } = message;
+		if (thread?.type !== ChannelType.PublicThread) {
+			throw new Error("failed to create thread.");
+		}
 
-		const archive = async () => {
-			await thread.setArchived(true);
-		};
-
-		return {
-			type: "THREAD",
-			threadId: thread.id,
-			author,
-			post: postThread,
-			archive,
-		};
+		return createThreadCommandContext(message, thread);
 	};
 
 	return {
