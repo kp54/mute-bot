@@ -1,13 +1,12 @@
 {
-  "extends": "@tsconfig/recommended/tsconfig.json",
+  "extends": [
+    "@tsconfig/node24/tsconfig.json",
+    "@tsconfig/node-ts/tsconfig.json",
+  ],
   "include": [
-    "src/**/*.ts",
+    "src/",
   ],
   "compilerOptions": {
-    "outDir": "dist/",
-    "isolatedModules": true,
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "noEmit": true,
   },
 }
