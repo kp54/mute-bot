@@ -1,4 +1,4 @@
-import { enumerate } from "../../utils/enumerate.js";
+import { enumerate } from "../../utils/enumerate.ts";
 
 class EvaluationError extends Error {
 	kind: "Bottom" | "NaN" | "Infinity";

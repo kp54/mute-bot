@@ -1,15 +1,15 @@
-import config from "./config.local.js";
-import { createClient } from "./core/client/index.js";
-import { createConsoleLogger } from "./core/logger.js";
-import { autoThread } from "./features/auto-thread/index.js";
-import { echo } from "./features/echo/index.js";
-import { hitAndBlow } from "./features/hit-and-blow/index.js";
-import { ping } from "./features/ping/index.js";
-import { pokemon } from "./features/pokemon/index.js";
-import { remind } from "./features/remind/index.js";
-import { rpn } from "./features/rpn/index.js";
-import { terminate } from "./features/terminate/index.js";
-import { transponder } from "./features/transponder/index.js";
+import config from "./config.local.ts";
+import { createClient } from "./core/client/index.ts";
+import { createConsoleLogger } from "./core/logger.ts";
+import { autoThread } from "./features/auto-thread/index.ts";
+import { echo } from "./features/echo/index.ts";
+import { hitAndBlow } from "./features/hit-and-blow/index.ts";
+import { ping } from "./features/ping/index.ts";
+import { pokemon } from "./features/pokemon/index.ts";
+import { remind } from "./features/remind/index.ts";
+import { rpn } from "./features/rpn/index.ts";
+import { terminate } from "./features/terminate/index.ts";
+import { transponder } from "./features/transponder/index.ts";
 
 const client = createClient({
 	config,

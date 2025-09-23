@@ -1,10 +1,10 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
-import type { CreateClientOptions, Feature } from "../types.js";
-import { handleHelp } from "./builtins/help.js";
-import { createCommandBody } from "./command-body.js";
-import { createCommandContext } from "./command-context.js";
-import { parseCommand } from "./parse-command.js";
-import { createSetupContext } from "./setup-context.js";
+import type { CreateClientOptions, Feature } from "../types.ts";
+import { handleHelp } from "./builtins/help.ts";
+import { createCommandBody } from "./command-body.ts";
+import { createCommandContext } from "./command-context.ts";
+import { parseCommand } from "./parse-command.ts";
+import { createSetupContext } from "./setup-context.ts";
 
 const formatError = (e: Error): string => {
 	const lines = [`${e.name}: ${e.message}`, e.stack];

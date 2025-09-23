@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { evaluate } from "../features/rpn/core.js";
+import { evaluate } from "../features/rpn/core.ts";
 
 describe("test for rpn core", () => {
 	it("should return 'Empty' if input is empty", () => {

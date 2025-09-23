@@ -1,2 +1,2 @@
-import "./parse-command.js";
-import "./rpn.js";
+import "./parse-command.ts";
+import "./rpn.ts";

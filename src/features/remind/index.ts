@@ -1,8 +1,8 @@
 import { DateTime } from "luxon";
-import { defineFeature } from "../../core/feature.js";
-import { parse } from "./parser.js";
+import { defineFeature } from "../../core/feature.ts";
+import { parse } from "./parser.ts";
 
-declare module "../../core/types" {
+declare module "../../core/types.ts" {
 	interface Config {
 		remind: {
 			interval: number;

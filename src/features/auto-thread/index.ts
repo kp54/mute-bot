@@ -1,4 +1,4 @@
-import { defineFeature } from "../../core/feature.js";
+import { defineFeature } from "../../core/feature.ts";
 
 export const autoThread = defineFeature((setupCtx) => {
 	const { prefix } = setupCtx.config.core;

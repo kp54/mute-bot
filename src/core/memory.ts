@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import type { Memory } from "./types.js";
+import type { Memory } from "./types.ts";
 
 const PATH = "./memory.json";
 const TMPPATH = `${PATH}.tmp` as const;

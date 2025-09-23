@@ -1,5 +1,5 @@
 import process from "node:process";
-import { defineFeature } from "../../core/feature.js";
+import { defineFeature } from "../../core/feature.ts";
 
 export const terminate = defineFeature(({ config }) => ({
 	name: "terminate",

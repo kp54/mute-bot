@@ -10,7 +10,7 @@ import type {
 	ChannelCommandContext,
 	CommandContext,
 	ThreadCommandContext,
-} from "../types.js";
+} from "../types.ts";
 
 const createThreadCommandContext = (
 	message: Message,

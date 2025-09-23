@@ -1,4 +1,4 @@
-import type { Feature, FeatureFactory, SetupContext } from "./types.js";
+import type { Feature, FeatureFactory, SetupContext } from "./types.ts";
 
 type FeatureDefinition = {
 	name: string;

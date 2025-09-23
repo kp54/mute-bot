@@ -1,5 +1,5 @@
-import { defineFeature } from "../../core/feature.js";
-import { evaluate } from "./core.js";
+import { defineFeature } from "../../core/feature.ts";
+import { evaluate } from "./core.ts";
 
 const usage = `
 \`\`\`

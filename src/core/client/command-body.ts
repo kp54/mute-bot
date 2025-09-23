@@ -1,4 +1,4 @@
-import type { CommandBody } from "../types.js";
+import type { CommandBody } from "../types.ts";
 
 export const createCommandBody = (
 	matcher: RegExp,

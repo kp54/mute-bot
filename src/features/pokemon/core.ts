@@ -1,6 +1,6 @@
-import { enumerate } from "../../utils/enumerate.js";
-import { pokemonTypes, typeResistances } from "./constants.js";
-import type { PokemonType } from "./types.js";
+import { enumerate } from "../../utils/enumerate.ts";
+import { pokemonTypes, typeResistances } from "./constants.ts";
+import type { PokemonType } from "./types.ts";
 
 export const combineResistances = (type1: PokemonType, type2: PokemonType) => {
 	if (type1 === type2) {

@@ -1,6 +1,6 @@
 import type { Client } from "discord.js";
-import { connectStorage } from "../memory.js";
-import type { CreateClientOptions, Memory, SetupContext } from "../types.js";
+import { connectStorage } from "../memory.ts";
+import type { CreateClientOptions, Memory, SetupContext } from "../types.ts";
 
 export const createSetupContext = (
 	guildId: string,

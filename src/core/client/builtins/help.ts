@@ -1,5 +1,5 @@
 import type { Message } from "discord.js";
-import type { Config, Feature } from "../../types.js";
+import type { Config, Feature } from "../../types.ts";
 
 export const handleHelp = async (
 	config: Config,

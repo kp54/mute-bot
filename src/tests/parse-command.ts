@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { parseCommand } from "../core/client/parse-command.js";
+import { parseCommand } from "../core/client/parse-command.ts";
 
 describe("test for parseCommand", () => {
 	it("sould split words by spaces", () => {

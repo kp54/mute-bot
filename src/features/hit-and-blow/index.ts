@@ -1,5 +1,5 @@
-import { defineFeature } from "../../core/feature.js";
-import type { CommandContext, Memory } from "../../core/types.js";
+import { defineFeature } from "../../core/feature.ts";
+import type { CommandContext, Memory } from "../../core/types.ts";
 
 const DIGITS = 4;
 

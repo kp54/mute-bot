@@ -1,5 +1,5 @@
-import { defineFeature } from "../../core/feature.js";
-import { parse } from "./parser.js";
+import { defineFeature } from "../../core/feature.ts";
+import { parse } from "./parser.ts";
 
 const usage = (prefix: string) =>
 	[

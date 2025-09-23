@@ -1,11 +1,11 @@
-import { defineFeature } from "../../core/feature.js";
-import type { ChannelCommandContext } from "../../core/types.js";
-import { pokemonTypes, typeResistances } from "./constants.js";
+import { defineFeature } from "../../core/feature.ts";
+import type { ChannelCommandContext } from "../../core/types.ts";
+import { pokemonTypes, typeResistances } from "./constants.ts";
 import {
 	combineResistances,
 	prettyFormatResistance,
 	randomType,
-} from "./core.js";
+} from "./core.ts";
 
 const post = async (
 	ctx: ChannelCommandContext,
